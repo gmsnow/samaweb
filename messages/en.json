@@ -212,6 +212,12 @@
         "lumbar": "Lumbar Spine",
         "sacrum": "Sacrum"
       }
+    },
+    "ankleFoot": {
+      "eyebrow": "Interactive 3D Model",
+      "title": "Ankle & Foot",
+      "highlight": "Nerves, Arteries & Ligaments",
+      "description": "A detailed interactive model of the nerves, arteries, and ligaments of the ankle and foot, powered by BioDigital and the MSD Manual. Click structures to explore, and use the toolbar to dissect, zoom, and enter fullscreen."
     }
   },
   "pricing": {
