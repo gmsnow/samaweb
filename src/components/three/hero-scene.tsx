@@ -77,7 +77,7 @@ function GlbSpine({ mouse }: { mouse: React.MutableRefObject<{ x: number; y: num
   });
 
   return (
-    <group ref={group} position={[0, -0.34, 0]} scale={5.5}>
+    <group ref={group} position={[0, -1.9, 0]} scale={5.5}>
       <primitive object={scene} />
       <SpinalCord />
     </group>
