@@ -1,14 +1,8 @@
 import type { Metadata } from "next";
 import { setRequestLocale } from "next-intl/server";
 import { getTranslations } from "next-intl/server";
-import dynamic from "next/dynamic";
+import { LazySpineViewer } from "@/components/spine/lazy-spine-viewer";
 import { SectionHeading } from "@/components/shared/section-heading";
-
-const SpineViewer = dynamic(
-  () =>
-    import("@/components/spine/SpineViewer").then((m) => m.SpineViewer),
-  { ssr: false }
-);
 
 export async function generateMetadata({
   params,
@@ -43,7 +37,7 @@ export default async function AnatomyPage({
           highlight={t("highlight")}
           description={t("description")}
         />
-        <SpineViewer />
+        <LazySpineViewer />
       </div>
     </div>
   );
