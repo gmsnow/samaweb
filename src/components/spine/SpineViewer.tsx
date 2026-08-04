@@ -83,11 +83,11 @@ export function SpineViewer() {
 
   return (
     <div className="relative overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-b from-slate-900/80 to-slate-950/90 backdrop-blur-sm">
-      <div className="relative h-[500px] w-full sm:h-[600px]">
+      <div className="relative h-[520px] w-full sm:h-[680px] lg:h-[800px]">
         <Suspense fallback={<LoadingFallback />}>
           <Canvas
             dpr={[1, 2]}
-            camera={{ position: [2.5, 0.3, 4], fov: 40 }}
+            camera={{ position: [2.4, 0.1, 3.6], fov: 45 }}
             gl={{
               antialias: true,
               alpha: true,
@@ -101,9 +101,9 @@ export function SpineViewer() {
             <SpineModel selected={selected} onSelect={handleSelect} />
             <Controls selected={selected} />
             <ContactShadows
-              position={[0, -0.35, 0]}
-              opacity={0.3}
-              scale={8}
+              position={[0, -1.55, 0]}
+              opacity={0.35}
+              scale={10}
               blur={2.5}
               far={4}
               color="#0f172a"

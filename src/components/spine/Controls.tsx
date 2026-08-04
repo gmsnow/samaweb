@@ -10,7 +10,7 @@ interface ControlsProps {
   selected: string | null;
 }
 
-const DEFAULT_TARGET = new THREE.Vector3(0, 0.3, 0);
+const DEFAULT_TARGET = new THREE.Vector3(0, 0, 0);
 
 export function Controls({ selected }: ControlsProps) {
   const ref = useRef<OrbitControlsImpl>(null);

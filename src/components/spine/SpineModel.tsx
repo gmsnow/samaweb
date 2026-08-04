@@ -149,7 +149,9 @@ export function SpineModel({ selected, onSelect }: SpineModelProps) {
       onPointerOut={handlePointerOut}
       onClick={handleClick}
     >
-      <primitive object={scene} />
+      <group position={[0, -1.7, 0]} scale={5}>
+        <primitive object={scene} />
+      </group>
 
       {hovered && hovered !== selected && hoveredPos && (
         <HoverLabel position={hoveredPos} nodeKey={hovered} />
