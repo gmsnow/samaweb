@@ -108,6 +108,8 @@
     @apply bg-background text-foreground;
     font-feature-settings: "rlig" 1, "calt" 1;
     max-width: 100vw;
+    overflow-x: hidden;
+    overflow-x: clip;
   }
   html[dir="rtl"] .ltr-only {
     direction: ltr;
