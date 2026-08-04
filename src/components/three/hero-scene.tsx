@@ -2,45 +2,34 @@
 
 import * as React from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
-import { Float, Sparkles } from "@react-three/drei";
+import { Float, Sparkles, useGLTF } from "@react-three/drei";
+import type { GLTF } from "three-stdlib";
 import { EffectComposer, Bloom, Vignette } from "@react-three/postprocessing";
 import * as THREE from "three";
 
-/* ─── Spine ─────────────────────────────────────────────────────────── */
+/* ─── GLB Spine ─────────────────────────────────────────────────────── */
 
-function Spine({ mouse }: { mouse: React.MutableRefObject<{ x: number; y: number }> }) {
+useGLTF.preload("/spine.glb");
+
+function GlbSpine({ mouse }: { mouse: React.MutableRefObject<{ x: number; y: number }> }) {
   const group = React.useRef<THREE.Group>(null);
+  const { scene } = useGLTF("/spine.glb") as GLTF;
 
-  const vertebrae = React.useMemo(() => {
-    const items: { position: [number, number, number]; scale: number }[] = [];
-    const N = 24;
-    for (let i = 0; i < N; i++) {
-      const t = i / (N - 1);
-      const y = -3 + t * 6;
-      const x =
-        Math.sin(t * Math.PI * 1.6) * 0.32 +
-        Math.sin(t * Math.PI * 3.2) * 0.06;
-      const z = Math.cos(t * Math.PI * 0.9) * 0.18;
-      const base = 0.18 + Math.sin(t * Math.PI) * 0.11;
-      items.push({ position: [x, y, z], scale: base });
-    }
-    return items;
-  }, []);
-
-  const boneMat = React.useMemo(
-    () =>
-      new THREE.MeshPhysicalMaterial({
+  React.useEffect(() => {
+    scene.traverse((child) => {
+      if (!(child instanceof THREE.Mesh)) return;
+      child.material = new THREE.MeshPhysicalMaterial({
         color: "#dce6f0",
-        metalness: 0.05,
-        roughness: 0.18,
-        clearcoat: 0.9,
+        metalness: 0.08,
+        roughness: 0.16,
+        clearcoat: 0.85,
         clearcoatRoughness: 0.12,
-        sheen: 0.35,
-        sheenRoughness: 0.35,
-        sheenColor: new THREE.Color("#a0c4e8"),
-      }),
-    []
-  );
+        sheen: 0.4,
+        sheenRoughness: 0.3,
+        sheenColor: new THREE.Color("#93b8e0"),
+      });
+    });
+  }, [scene]);
 
   useFrame((state) => {
     if (!group.current) return;
@@ -48,60 +37,19 @@ function Spine({ mouse }: { mouse: React.MutableRefObject<{ x: number; y: number
     const t = state.clock.elapsedTime;
     group.current.rotation.y = THREE.MathUtils.lerp(
       group.current.rotation.y,
-      mx * 0.45 + t * 0.1,
+      mx * 0.35 + t * 0.08,
       0.04
     );
     group.current.rotation.x = THREE.MathUtils.lerp(
       group.current.rotation.x,
-      my * 0.22 + Math.sin(t * 0.35) * 0.05,
+      my * 0.18 + Math.sin(t * 0.35) * 0.04,
       0.04
     );
-    const pulse =
-      0.5 + Math.sin(t * 2.2) * 0.3 + Math.sin(t * 1.1) * 0.15;
-    group.current.children.forEach((child) => {
-      if (child instanceof THREE.Mesh && child.userData.isDisc) {
-        (child.material as THREE.MeshPhysicalMaterial).emissiveIntensity =
-          pulse;
-      }
-    });
   });
 
   return (
-    <group ref={group}>
-      {vertebrae.map((v, i) => (
-        <mesh key={i} position={v.position} scale={[1, 0.52, 0.82]}>
-          <sphereGeometry args={[v.scale, 28, 18]} />
-          <primitive object={boneMat} attach="material" />
-        </mesh>
-      ))}
-      {vertebrae.slice(0, -1).map((v, i) => {
-        const n = vertebrae[i + 1];
-        const mid: [number, number, number] = [
-          (v.position[0] + n.position[0]) / 2,
-          (v.position[1] + n.position[1]) / 2,
-          (v.position[2] + n.position[2]) / 2,
-        ];
-        return (
-          <mesh
-            key={`d${i}`}
-            position={mid}
-            rotation={[Math.PI / 2, 0, 0]}
-            userData={{ isDisc: true }}
-          >
-            <cylinderGeometry args={[0.13, 0.13, 0.07, 18]} />
-            <meshPhysicalMaterial
-              color="#22d3ee"
-              emissive="#06b6d4"
-              emissiveIntensity={0.7}
-              metalness={0.35}
-              roughness={0.2}
-              transparent
-              opacity={0.82}
-              clearcoat={0.6}
-            />
-          </mesh>
-      );
-      })}
+    <group ref={group} position={[0, -0.34, 0]} scale={5.5}>
+      <primitive object={scene} />
     </group>
   );
 }
@@ -391,7 +339,7 @@ function ParallaxLayer() {
 
   return (
     <group ref={group}>
-      <Spine mouse={mouse} />
+      <GlbSpine mouse={mouse} />
       <DnaHelix />
       <PulseRings />
       <GlassOrb
