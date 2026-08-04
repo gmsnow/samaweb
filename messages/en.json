@@ -192,6 +192,12 @@
         "tagline": "Strength & power",
         "description": "Skeletal muscles contract to produce movement. Progressive strengthening builds the force and endurance your body needs to recover and stay injury-free."
       }
+    },
+    "spineViewer": {
+      "eyebrow": "Interactive Spine",
+      "title": "Explore the",
+      "highlight": "Vertebral Column",
+      "description": "Click any of the 25 vertebrae — C1 through C7, T1 through T12, L1 through L5, and the sacrum — to learn about its role and clinical significance."
     }
   },
   "pricing": {

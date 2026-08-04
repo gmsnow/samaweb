@@ -1,8 +1,15 @@
 import type { Metadata } from "next";
 import { setRequestLocale } from "next-intl/server";
 import { getTranslations } from "next-intl/server";
+import dynamic from "next/dynamic";
 import { AnatomyViewer } from "@/components/three/anatomy-viewer";
 import { SectionHeading } from "@/components/shared/section-heading";
+
+const SpineViewer = dynamic(
+  () =>
+    import("@/components/spine/SpineViewer").then((m) => m.SpineViewer),
+  { ssr: false }
+);
 
 export async function generateMetadata({
   params,
@@ -38,6 +45,16 @@ export default async function AnatomyPage({
           description={t("description")}
         />
         <AnatomyViewer />
+      </div>
+
+      <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 mt-20">
+        <SectionHeading
+          eyebrow={t("spineViewer.eyebrow")}
+          title={t("spineViewer.title")}
+          highlight={t("spineViewer.highlight")}
+          description={t("spineViewer.description")}
+        />
+        <SpineViewer />
       </div>
     </div>
   );
