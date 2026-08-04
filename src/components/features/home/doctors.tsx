@@ -11,10 +11,12 @@ import { Button } from "@/components/ui/button";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { SectionHeading } from "@/components/shared/section-heading";
 import { doctors } from "@/data/content";
+import { useSiteImages } from "@/hooks/use-site-images";
 
 export function Doctors() {
   const t = useTranslations("doctors");
   const locale = useLocale();
+  const overrides = useSiteImages();
 
   return (
     <section id="doctors" className="relative overflow-hidden py-24 sm:py-32">
@@ -41,7 +43,7 @@ export function Doctors() {
                 <CardContent className="relative pt-12">
                   <div className="mx-auto mb-4 h-24 w-24 overflow-hidden rounded-full border-4 border-background shadow-lift transition-transform duration-300 group-hover:scale-105">
                     <Avatar className="h-full w-full">
-                      <AvatarImage src={doctor.avatar} alt={doctor.name.en} />
+                      <AvatarImage src={overrides[doctor.id] ?? doctor.avatar} alt={doctor.name.en} />
                       <AvatarFallback>
                         {doctor.name.en.replace("Dr. ", "").slice(0, 2)}
                       </AvatarFallback>

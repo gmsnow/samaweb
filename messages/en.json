@@ -352,5 +352,21 @@
     "todayAppointments": "Today's Appointments",
     "totalDoctors": "Total Doctors",
     "adminAccess": "Admin access requires an authenticated session."
+  },
+  "website": {
+    "title": "Website Content",
+    "description": "Upload images from your device to update testimonials, doctors and blog pictures across the public site.",
+    "testimonials": "Testimonials",
+    "doctors": "Doctors",
+    "blog": "Blog",
+    "chooseFile": "Choose image",
+    "uploading": "Uploading...",
+    "remove": "Remove",
+    "custom": "Custom image",
+    "accessDenied": "Restricted area.",
+    "accessHint": "Enable demo admin or sign in with an admin account to manage website images.",
+    "enableDemo": "Enable demo admin",
+    "missingConfig": "Storage is not configured yet. Set SUPABASE_SERVICE_ROLE_KEY.",
+    "error": "Something went wrong. Please try again."
   }
 }

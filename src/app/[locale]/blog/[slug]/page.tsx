@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import Image from "next/image";
 import { setRequestLocale } from "next-intl/server";
 import { blogPosts } from "@/data/content";
 import { Badge } from "@/components/ui/badge";
+import { BlogImage } from "@/components/features/blog/blog-image";
 
 export function generateStaticParams() {
   return blogPosts.map((post) => ({ slug: post.slug }));
@@ -53,8 +53,9 @@ export default async function BlogPostPage({
       </div>
 
       <div className="relative mt-8 overflow-hidden rounded-3xl">
-        <Image
-          src={post.image}
+        <BlogImage
+          slot={`blog-${post.slug}`}
+          defaultSrc={post.image}
           alt={post.title[locale_]}
           width={1200}
           height={700}

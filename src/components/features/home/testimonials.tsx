@@ -17,10 +17,12 @@ import { SectionHeading } from "@/components/shared/section-heading";
 import { testimonials } from "@/data/content";
 import { siteConfig } from "@/config/site";
 import { fetchLiveStats, type LiveStats } from "@/lib/data/live";
+import { useSiteImages } from "@/hooks/use-site-images";
 
 export function Testimonials({ initialStats }: { initialStats?: LiveStats | null }) {
   const t = useTranslations("testimonials");
   const locale = useLocale();
+  const overrides = useSiteImages();
   const [plugin] = React.useState(() =>
     Autoplay({ delay: 5000, stopOnInteraction: false })
   );
@@ -76,7 +78,7 @@ export function Testimonials({ initialStats }: { initialStats?: LiveStats | null
                   </p>
                   <div className="mt-5 flex items-center gap-3 border-t pt-4">
                     <Avatar className="h-11 w-11">
-                      <AvatarImage src={item.avatar} alt={item.name.en} />
+                      <AvatarImage src={overrides[item.id] ?? item.avatar} alt={item.name.en} />
                       <AvatarFallback>{item.name.en.slice(0, 2)}</AvatarFallback>
                     </Avatar>
                     <div>

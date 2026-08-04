@@ -1,7 +1,6 @@
 "use client";
 
 import * as React from "react";
-import Image from "next/image";
 import { motion } from "framer-motion";
 import { useTranslations, useLocale } from "next-intl";
 import { Link } from "@/i18n/navigation";
@@ -10,6 +9,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { SectionHeading } from "@/components/shared/section-heading";
 import { blogPosts } from "@/data/content";
+import { BlogImage } from "./blog-image";
 
 const CATEGORIES = ["all", "Ergonomics", "Sports", "Therapy", "Pediatrics", "Pain", "Wellness"];
 
@@ -59,8 +59,9 @@ export function BlogList() {
             <Link href={`/blog/${post.slug}`}>
               <Card className="group h-full overflow-hidden hover:-translate-y-1.5 hover:shadow-lift">
                 <div className="relative overflow-hidden">
-                  <Image
-                    src={post.image}
+                  <BlogImage
+                    slot={`blog-${post.slug}`}
+                    defaultSrc={post.image}
                     alt={locale === "ar" ? post.title.ar : post.title.en}
                     width={800}
                     height={500}
