@@ -11,6 +11,34 @@ import * as THREE from "three";
 
 useGLTF.preload("/spine.glb");
 
+const VERTEBRAE_POSITIONS: [number, number, number][] = [
+  [0.0034, 0.6250, 0.0273], // C1
+  [0.0025, 0.6142, 0.0189], // C2
+  [-0.0025, 0.5988, 0.0127], // C3
+  [-0.003, 0.5844, 0.0066], // C4
+  [-0.0051, 0.5696, 0.0012], // C5
+  [-0.006, 0.5559, -0.0041], // C6
+  [-0.0055, 0.5419, -0.013], // C7
+  [-0.0033, 0.5271, -0.0199], // T1
+  [-0.0018, 0.5105, -0.0279], // T2
+  [0.0003, 0.4921, -0.0363], // T3
+  [0.0011, 0.4713, -0.0442], // T4
+  [0.0019, 0.4489, -0.0511], // T5
+  [0.002, 0.4256, -0.0558], // T6
+  [0.0019, 0.4016, -0.057], // T7
+  [0.0014, 0.3772, -0.0577], // T8
+  [-0.0003, 0.3529, -0.055], // T9
+  [-0.0018, 0.3271, -0.052], // T10
+  [-0.0025, 0.3007, -0.0492], // T11
+  [-0.0036, 0.2716, -0.0459], // T12
+  [-0.0051, 0.2399, -0.0444], // L1
+  [-0.0069, 0.206, -0.0419], // L2
+  [-0.0071, 0.1721, -0.0388], // L3
+  [-0.006, 0.1382, -0.0361], // L4
+  [-0.0039, 0.1066, -0.0371], // L5
+  [-0.0052, 0.0636, -0.064], // Sacrum
+];
+
 function GlbSpine({ mouse }: { mouse: React.MutableRefObject<{ x: number; y: number }> }) {
   const group = React.useRef<THREE.Group>(null);
   const { scene } = useGLTF("/spine.glb") as GLTF;
@@ -51,6 +79,107 @@ function GlbSpine({ mouse }: { mouse: React.MutableRefObject<{ x: number; y: num
   return (
     <group ref={group} position={[0, -0.34, 0]} scale={5.5}>
       <primitive object={scene} />
+      <SpinalCord />
+    </group>
+  );
+}
+
+/* ─── Spinal Cord + Nerves ──────────────────────────────────────────── */
+
+function SpinalCord() {
+  const cordMat = React.useMemo(
+    () =>
+      new THREE.MeshPhysicalMaterial({
+        color: "#ece0cb",
+        metalness: 0.0,
+        roughness: 0.5,
+        clearcoat: 0.2,
+        clearcoatRoughness: 0.4,
+        transparent: true,
+        opacity: 0.95,
+      }),
+    []
+  );
+
+  const rootMat = React.useMemo(
+    () =>
+      new THREE.MeshPhysicalMaterial({
+        color: "#f3e9d9",
+        metalness: 0.0,
+        roughness: 0.6,
+        transparent: true,
+        opacity: 0.9,
+      }),
+    []
+  );
+
+  const cordGeom = React.useMemo(() => {
+    const points = VERTEBRAE_POSITIONS.slice(0, 20).map(
+      (p) => new THREE.Vector3(p[0], p[1], p[2] - 0.004)
+    );
+    const curve = new THREE.CatmullRomCurve3(points);
+    return new THREE.TubeGeometry(curve, 64, 0.011, 12, false);
+  }, []);
+
+  const caudaGeoms = React.useMemo(() => {
+    const start = new THREE.Vector3(
+      ...VERTEBRAE_POSITIONS[19]
+    );
+    const base = new THREE.Vector3(
+      ...VERTEBRAE_POSITIONS[24]
+    );
+    const geoms: THREE.TubeGeometry[] = [];
+    for (let i = 0; i < 16; i++) {
+      const angle = (i / 16) * Math.PI * 2;
+      const ring = 0.02 + (i % 4) * 0.007;
+      const end = new THREE.Vector3(
+        base.x + Math.cos(angle) * ring,
+        base.y + (i % 2) * 0.008,
+        base.z + Math.sin(angle) * ring
+      );
+      const mid = start.clone().lerp(end, 0.5);
+      mid.x += Math.cos(angle) * 0.012;
+      mid.z += Math.sin(angle) * 0.012;
+      const curve = new THREE.CatmullRomCurve3([start, mid, end]);
+      geoms.push(new THREE.TubeGeometry(curve, 14, 0.0032, 6, false));
+    }
+    return geoms;
+  }, []);
+
+  const nerveGeoms = React.useMemo(() => {
+    const geoms: THREE.TubeGeometry[] = [];
+    const gaps = [4, 7, 10, 13, 16, 19];
+    gaps.forEach((idx) => {
+      const a = VERTEBRAE_POSITIONS[idx];
+      const b = VERTEBRAE_POSITIONS[idx + 1];
+      const mid: [number, number, number] = [
+        (a[0] + b[0]) / 2,
+        (a[1] + b[1]) / 2,
+        (a[2] + b[2]) / 2,
+      ];
+      [-1, 1].forEach((side) => {
+        const inner = new THREE.Vector3(mid[0], mid[1], mid[2] - 0.004);
+        const outer = new THREE.Vector3(
+          mid[0] + side * 0.022,
+          mid[1] - 0.01,
+          mid[2] + 0.006
+        );
+        const curve = new THREE.CatmullRomCurve3([inner, outer]);
+        geoms.push(new THREE.TubeGeometry(curve, 8, 0.003, 6, false));
+      });
+    });
+    return geoms;
+  }, []);
+
+  return (
+    <group>
+      <mesh geometry={cordGeom} material={cordMat} />
+      {caudaGeoms.map((g, i) => (
+        <mesh key={`cauda-${i}`} geometry={g} material={rootMat} />
+      ))}
+      {nerveGeoms.map((g, i) => (
+        <mesh key={`nerve-${i}`} geometry={g} material={rootMat} />
+      ))}
     </group>
   );
 }
