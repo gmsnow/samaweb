@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
-import { Float, Sparkles, useGLTF } from "@react-three/drei";
+import { Float, Sparkles, useGLTF, Environment, Lightformer } from "@react-three/drei";
 import type { GLTF } from "three-stdlib";
 import { EffectComposer, Bloom, Vignette } from "@react-three/postprocessing";
 import * as THREE from "three";
@@ -11,41 +11,24 @@ import * as THREE from "three";
 
 useGLTF.preload("/spine.glb");
 
-const REGION_COLORS = {
-  cervical: "#3b82f6",
-  thoracic: "#22c55e",
-  lumbar: "#f59e0b",
-  sacrum: "#ef4444",
-} as const;
-
-function regionForNode(name: string): keyof typeof REGION_COLORS {
-  const n = name.toLowerCase();
-  if (n.startsWith("c")) return "cervical";
-  if (n.startsWith("t")) return "thoracic";
-  if (n.startsWith("l")) return "lumbar";
-  return "sacrum";
-}
-
 function GlbSpine({ mouse }: { mouse: React.MutableRefObject<{ x: number; y: number }> }) {
   const group = React.useRef<THREE.Group>(null);
   const { scene } = useGLTF("/spine.glb") as GLTF;
 
   React.useEffect(() => {
+    let i = 0;
     scene.traverse((child) => {
       if (!(child instanceof THREE.Mesh)) return;
-      const region = regionForNode(child.name);
-      const color = REGION_COLORS[region];
+      const shade = 0.94 + ((i * 7) % 10) / 90;
       child.material = new THREE.MeshPhysicalMaterial({
-        color,
-        metalness: 0.35,
-        roughness: 0.18,
-        clearcoat: 0.8,
-        clearcoatRoughness: 0.15,
-        emissive: color,
-        emissiveIntensity: 0.12,
-        sheen: 0.3,
-        sheenColor: new THREE.Color(color),
+        color: new THREE.Color(shade, shade * 0.97, shade * 0.86),
+        metalness: 0.02,
+        roughness: 0.42,
+        clearcoat: 0.15,
+        clearcoatRoughness: 0.3,
+        envMapIntensity: 1.1,
       });
+      i++;
     });
   }, [scene]);
 
@@ -438,23 +421,55 @@ export function HeroScene() {
       aria-label="3D medical visualization of spine and DNA"
       role="img"
     >
-      <hemisphereLight args={["#e0f2fe", "#0f172a", 0.4]} />
-      <ambientLight intensity={0.35} />
+      <hemisphereLight args={["#fff8ef", "#3a2c1a", 0.55]} />
+      <ambientLight intensity={0.3} />
       <directionalLight
         position={[5, 7, 4]}
-        intensity={1.3}
-        color="#f8fafc"
+        intensity={1.6}
+        color="#fff4e4"
       />
       <directionalLight
         position={[-4, -1, -2]}
-        intensity={0.6}
-        color="#06b6d4"
+        intensity={0.5}
+        color="#bfd4ff"
       />
       <directionalLight
         position={[0, 2, -5]}
-        intensity={0.8}
-        color="#3b82f6"
+        intensity={0.4}
+        color="#ffffff"
       />
+      <Environment resolution={256}>
+        <group rotation={[-Math.PI / 3, 0, 0]}>
+          <Lightformer
+            form="circle"
+            intensity={4}
+            rotation-x={Math.PI / 2}
+            position={[0, 5, -9]}
+            scale={2}
+          />
+          <Lightformer
+            form="circle"
+            intensity={2}
+            rotation-y={Math.PI / 2}
+            position={[-5, 1, -1]}
+            scale={2}
+          />
+          <Lightformer
+            form="circle"
+            intensity={2}
+            rotation-y={Math.PI / 2}
+            position={[5, 1, -1]}
+            scale={2}
+          />
+          <Lightformer
+            form="ring"
+            intensity={2}
+            rotation-y={Math.PI / 2}
+            position={[-5, 1, 5]}
+            scale={2}
+          />
+        </group>
+      </Environment>
       <PulsingPointLight />
       <ParallaxLayer />
       <EffectComposer>
