@@ -11,6 +11,21 @@ import * as THREE from "three";
 
 useGLTF.preload("/spine.glb");
 
+const REGION_COLORS = {
+  cervical: "#3b82f6",
+  thoracic: "#22c55e",
+  lumbar: "#f59e0b",
+  sacrum: "#ef4444",
+} as const;
+
+function regionForNode(name: string): keyof typeof REGION_COLORS {
+  const n = name.toLowerCase();
+  if (n.startsWith("c")) return "cervical";
+  if (n.startsWith("t")) return "thoracic";
+  if (n.startsWith("l")) return "lumbar";
+  return "sacrum";
+}
+
 function GlbSpine({ mouse }: { mouse: React.MutableRefObject<{ x: number; y: number }> }) {
   const group = React.useRef<THREE.Group>(null);
   const { scene } = useGLTF("/spine.glb") as GLTF;
@@ -18,15 +33,18 @@ function GlbSpine({ mouse }: { mouse: React.MutableRefObject<{ x: number; y: num
   React.useEffect(() => {
     scene.traverse((child) => {
       if (!(child instanceof THREE.Mesh)) return;
+      const region = regionForNode(child.name);
+      const color = REGION_COLORS[region];
       child.material = new THREE.MeshPhysicalMaterial({
-        color: "#dce6f0",
-        metalness: 0.08,
-        roughness: 0.16,
-        clearcoat: 0.85,
-        clearcoatRoughness: 0.12,
-        sheen: 0.4,
-        sheenRoughness: 0.3,
-        sheenColor: new THREE.Color("#93b8e0"),
+        color,
+        metalness: 0.35,
+        roughness: 0.18,
+        clearcoat: 0.8,
+        clearcoatRoughness: 0.15,
+        emissive: color,
+        emissiveIntensity: 0.12,
+        sheen: 0.3,
+        sheenColor: new THREE.Color(color),
       });
     });
   }, [scene]);
