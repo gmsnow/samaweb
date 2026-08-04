@@ -1,6 +1,6 @@
 import type { MetadataRoute } from "next";
 
-const baseUrl = process.env.SITE_URL ?? "https://samacenter.com";
+const baseUrl = process.env.SITE_URL ?? "https://samacenter.vercel.app";
 
 export default function robots(): MetadataRoute.Robots {
   return {

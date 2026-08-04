@@ -4,7 +4,7 @@ export const siteConfig = {
   tagline: "Move Better. Live Stronger.",
   description:
     "A premium physical therapy & rehabilitation center combining advanced medicine, cutting-edge technology and human care.",
-  url: "https://samacenter.com",
+  url: "https://samacenter.vercel.app",
   locale: "en",
   logo: "/logo.svg",
   phone: "+967 778 199 978",

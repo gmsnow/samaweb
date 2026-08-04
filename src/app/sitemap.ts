@@ -2,7 +2,7 @@ import type { MetadataRoute } from "next";
 import { routing } from "@/i18n/routing";
 import { blogPosts } from "@/data/content";
 
-const baseUrl = process.env.SITE_URL ?? "https://samacenter.com";
+const baseUrl = process.env.SITE_URL ?? "https://samacenter.vercel.app";
 
 const STATIC_ROUTES = [
   "",

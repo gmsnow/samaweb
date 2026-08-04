@@ -46,7 +46,7 @@ export const viewport: Viewport = {
 };
 
 export async function generateMetadata(): Promise<Metadata> {
-  const baseUrl = process.env.SITE_URL ?? "https://samacenter.com";
+  const baseUrl = process.env.SITE_URL ?? "https://samacenter.vercel.app";
   return {
     title: {
       default: "Sama Center | Physical Therapy & Rehabilitation",
