@@ -22,6 +22,7 @@ function nodeToKey(name: string): string {
 
 interface SpineModelProps {
   selected: string | null;
+  listHovered: string | null;
   onSelect: (key: string | null, worldPos?: THREE.Vector3) => void;
 }
 
@@ -31,7 +32,11 @@ interface VertebraState {
   originalEmissive: THREE.Color;
 }
 
-export function SpineModel({ selected, onSelect }: SpineModelProps) {
+export function SpineModel({
+  selected,
+  listHovered,
+  onSelect,
+}: SpineModelProps) {
   const { scene } = useGLTF("/spine.glb") as GLTF;
   const groupRef = useRef<THREE.Group>(null);
   const vertebrae = useRef<Map<string, VertebraState>>(new Map());
@@ -62,6 +67,7 @@ export function SpineModel({ selected, onSelect }: SpineModelProps) {
 
   useFrame((state) => {
     const t = state.clock.elapsedTime;
+    const highlight = hovered ?? listHovered;
 
     vertebrae.current.forEach((vr) => {
       const mat = vr.mesh.material as THREE.MeshStandardMaterial;
@@ -71,7 +77,7 @@ export function SpineModel({ selected, onSelect }: SpineModelProps) {
         const pulse = 0.35 + Math.sin(t * 3) * 0.18;
         mat.emissive.set(info?.regionColor ?? "#60a5fa");
         mat.emissiveIntensity = pulse;
-      } else if (vr.key === hovered) {
+      } else if (vr.key === highlight) {
         mat.emissive.set("#60a5fa");
         mat.emissiveIntensity = 0.28;
       } else {

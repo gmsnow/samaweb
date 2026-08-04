@@ -197,7 +197,21 @@
       "eyebrow": "Interactive Spine",
       "title": "Explore the",
       "highlight": "Vertebral Column",
-      "description": "Click any of the 25 vertebrae — C1 through C7, T1 through T12, L1 through L5, and the sacrum — to learn about its role and clinical significance."
+      "description": "Click any of the 25 vertebrae — C1 through C7, T1 through T12, L1 through L5, and the sacrum — to learn about its role and clinical significance.",
+      "searchPlaceholder": "Search structures…",
+      "structures": "Structures",
+      "noResults": "No structures found",
+      "reset": "Reset view",
+      "fullscreen": "Fullscreen",
+      "exitFullscreen": "Exit fullscreen",
+      "togglePanel": "Toggle structures panel",
+      "deselect": "Deselect",
+      "regions": {
+        "cervical": "Cervical Spine",
+        "thoracic": "Thoracic Spine",
+        "lumbar": "Lumbar Spine",
+        "sacrum": "Sacrum"
+      }
     }
   },
   "pricing": {

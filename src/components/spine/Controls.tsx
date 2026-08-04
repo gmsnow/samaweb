@@ -8,13 +8,15 @@ import * as THREE from "three";
 
 interface ControlsProps {
   selected: string | null;
+  resetSignal: number;
 }
 
 const DEFAULT_TARGET = new THREE.Vector3(0, 0, 0);
+const DEFAULT_CAMERA_POS = new THREE.Vector3(2.4, 0.1, 3.6);
 
-export function Controls({ selected }: ControlsProps) {
+export function Controls({ selected, resetSignal }: ControlsProps) {
   const ref = useRef<OrbitControlsImpl>(null);
-  const { scene } = useThree();
+  const { scene, camera } = useThree();
   const targetPos = useRef(DEFAULT_TARGET.clone());
 
   useEffect(() => {
@@ -31,6 +33,13 @@ export function Controls({ selected }: ControlsProps) {
       targetPos.current.copy(DEFAULT_TARGET);
     }
   }, [selected, scene]);
+
+  useEffect(() => {
+    if (resetSignal === 0) return;
+    targetPos.current.copy(DEFAULT_TARGET);
+    camera.position.copy(DEFAULT_CAMERA_POS);
+    ref.current?.update();
+  }, [resetSignal, camera]);
 
   useFrame(() => {
     if (!ref.current) return;
