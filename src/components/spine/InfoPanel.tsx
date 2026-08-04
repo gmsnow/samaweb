@@ -1,17 +1,20 @@
 "use client";
 
 import { X } from "lucide-react";
-import { getVertebraInfo } from "./vertebrae";
+
+export interface StructureInfo {
+  category: string;
+  categoryColor: string;
+  fullName: string;
+  description: string;
+}
 
 interface InfoPanelProps {
-  selected: string | null;
+  info: StructureInfo | null;
   onClose: () => void;
 }
 
-export function InfoPanel({ selected, onClose }: InfoPanelProps) {
-  if (!selected) return null;
-
-  const info = getVertebraInfo(selected);
+export function InfoPanel({ info, onClose }: InfoPanelProps) {
   if (!info) return null;
 
   return (
@@ -20,9 +23,9 @@ export function InfoPanel({ selected, onClose }: InfoPanelProps) {
         <div>
           <span
             className="inline-block rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-white"
-            style={{ backgroundColor: info.regionColor }}
+            style={{ backgroundColor: info.categoryColor }}
           >
-            {info.region}
+            {info.category}
           </span>
           <h3 className="mt-1.5 text-base font-bold text-white">
             {info.fullName}

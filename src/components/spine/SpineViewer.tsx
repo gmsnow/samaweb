@@ -6,6 +6,7 @@ import {
   useEffect,
   Suspense,
   useCallback,
+  useMemo,
 } from "react";
 import { Canvas } from "@react-three/fiber";
 import { ContactShadows } from "@react-three/drei";
@@ -22,8 +23,12 @@ import * as THREE from "three";
 import { SpineModel } from "./SpineModel";
 import { Lights } from "./Lights";
 import { Controls } from "./Controls";
-import { StructureList } from "./StructureList";
-import { InfoPanel } from "./InfoPanel";
+import { StructureList, type StructureListItem } from "./StructureList";
+import { InfoPanel, type StructureInfo } from "./InfoPanel";
+import { ToolButton } from "./tool-button";
+import { VERTEBRAE, getVertebraInfo } from "./vertebrae";
+
+const REGION_ORDER = ["Cervical", "Thoracic", "Lumbar", "Sacrum"] as const;
 
 function LoadingFallback() {
   return (
@@ -70,6 +75,39 @@ export function SpineViewer() {
       containerRef.current?.requestFullscreen();
     }
   }, []);
+
+  const structureItems = useMemo<StructureListItem[]>(
+    () =>
+      VERTEBRAE.map((v) => ({
+        key: v.nodePrefix,
+        label: v.label,
+        fullName: v.fullName,
+        category: v.region,
+        color: v.regionColor,
+      })),
+    []
+  );
+
+  const structureCategories = useMemo(
+    () =>
+      REGION_ORDER.map((r) => ({
+        key: r,
+        label: t(`regions.${r.toLowerCase()}`),
+      })),
+    [t]
+  );
+
+  const selectedInfo = useMemo<StructureInfo | null>(() => {
+    if (!selected) return null;
+    const v = getVertebraInfo(selected);
+    if (!v) return null;
+    return {
+      category: v.region,
+      categoryColor: v.regionColor,
+      fullName: v.fullName,
+      description: v.description,
+    };
+  }, [selected]);
 
   return (
     <div
@@ -120,19 +158,23 @@ export function SpineViewer() {
       {panelOpen && (
         <div className="absolute inset-y-3 start-3 z-10 flex w-60 sm:start-4 sm:w-72">
           <StructureList
+            items={structureItems}
+            categories={structureCategories}
             query={query}
             onQueryChange={setQuery}
             selected={selected}
             hovered={listHovered}
             onSelect={handleSelect}
             onHover={setListHovered}
-            t={t}
+            searchPlaceholder={t("searchPlaceholder")}
+            structuresLabel={t("structures")}
+            noResultsLabel={t("noResults")}
           />
         </div>
       )}
 
       <div className="absolute bottom-4 end-3 z-10 sm:end-4">
-        <InfoPanel selected={selected} onClose={() => handleSelect(null)} />
+        <InfoPanel info={selectedInfo} onClose={() => handleSelect(null)} />
       </div>
 
       <div className="absolute end-3 top-3 z-10 flex flex-col gap-2 sm:end-4 sm:top-4">
@@ -165,27 +207,5 @@ export function SpineViewer() {
         <p className="text-center text-xs text-white/40">{t("deselect")}</p>
       </div>
     </div>
-  );
-}
-
-function ToolButton({
-  title,
-  onClick,
-  children,
-}: {
-  title: string;
-  onClick: () => void;
-  children: React.ReactNode;
-}) {
-  return (
-    <button
-      type="button"
-      title={title}
-      aria-label={title}
-      onClick={onClick}
-      className="grid h-9 w-9 place-items-center rounded-xl border border-white/10 bg-slate-900/80 text-white/70 shadow-lg backdrop-blur-xl transition-colors hover:bg-white/10 hover:text-white"
-    >
-      {children}
-    </button>
   );
 }
