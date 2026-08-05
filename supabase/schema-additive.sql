@@ -157,6 +157,11 @@ create policy "reviews_admin_all" on public.site_reviews
   for all using (exists (select 1 from public.profiles p where p.id = auth.uid() and p.role = 'admin'));
 
 -- ============================================================
+-- INSURANCE COMPANIES (Prisma-managed table, public read only)
+-- ============================================================
+alter table public.insurance_companies enable row level security;
+
+-- ============================================================
 -- UPDATED_AT TRIGGER (profiles already exists)
 -- ============================================================
 create or replace function public.set_updated_at()
@@ -242,3 +247,8 @@ drop policy if exists "testimonials_read" on public.testimonials;
 create policy "testimonials_read" on public.testimonials for select using (true);
 drop policy if exists "testimonials_staff_write" on public.testimonials;
 create policy "testimonials_staff_write" on public.testimonials for all using (exists (select 1 from public.profiles p where p.id = auth.uid() and p.role in ('admin', 'therapist')));
+
+-- Insurance companies: public read
+drop policy if exists "insurance_companies_read" on public.insurance_companies;
+create policy "insurance_companies_read" on public.insurance_companies
+  for select using (active = true and deleted_at is null);

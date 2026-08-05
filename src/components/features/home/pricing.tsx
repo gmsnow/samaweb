@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import { motion } from "framer-motion";
+import Image from "next/image";
 import { useTranslations, useLocale } from "next-intl";
 import { Check, Sparkles, Landmark } from "lucide-react";
 import { Link } from "@/i18n/navigation";
@@ -9,19 +10,26 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { SectionHeading } from "@/components/shared/section-heading";
-import { fetchLivePackages, type LivePackage } from "@/lib/data/live";
-
-const insurance = ["AXA", "Allianz", "Cigna", "MetLife", "Bupa", "Generali"];
+import {
+  fetchLivePackages,
+  fetchLiveInsuranceCompanies,
+  type LivePackage,
+  type LiveInsuranceCompany,
+} from "@/lib/data/live";
 
 export function Pricing() {
   const t = useTranslations("pricing");
   const locale = useLocale();
   const [live, setLive] = React.useState<LivePackage[]>([]);
+  const [companies, setCompanies] = React.useState<LiveInsuranceCompany[]>([]);
 
   React.useEffect(() => {
     let active = true;
     fetchLivePackages().then((list) => {
       if (active) setLive(list);
+    });
+    fetchLiveInsuranceCompanies().then((list) => {
+      if (active) setCompanies(list);
     });
     return () => {
       active = false;
@@ -104,12 +112,23 @@ export function Pricing() {
             <h3 className="font-semibold">{t("insurance")}</h3>
           </div>
           <div className="flex flex-wrap items-center justify-center gap-3">
-            {insurance.map((company) => (
+            {companies.map((company) => (
               <span
-                key={company}
-                className="rounded-xl border border-border/60 bg-muted/50 px-4 py-2 text-sm font-medium text-muted-foreground"
+                key={company.id}
+                className="flex h-12 items-center justify-center rounded-xl border border-border/60 bg-muted/50 px-4 text-sm font-medium text-muted-foreground"
               >
-                {company}
+                {company.logoUrl ? (
+                  <Image
+                    src={company.logoUrl}
+                    alt={company.name}
+                    width={200}
+                    height={64}
+                    className="h-8 w-auto max-w-[140px] object-contain"
+                    loading="lazy"
+                  />
+                ) : (
+                  company.name
+                )}
               </span>
             ))}
           </div>

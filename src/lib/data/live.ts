@@ -232,6 +232,42 @@ export function formatPrice(price: number, locale: string): string {
   }).format(price);
 }
 
+export interface LiveInsuranceCompany {
+  id: string;
+  name: string;
+  logoUrl: string | null;
+}
+
+let insuranceCache: { data: LiveInsuranceCompany[]; at: number } | null = null;
+
+export async function fetchLiveInsuranceCompanies(): Promise<LiveInsuranceCompany[]> {
+  if (insuranceCache && Date.now() - insuranceCache.at < CACHE_TTL) return insuranceCache.data;
+
+  try {
+    const { data, error } = await supabaseBrowser
+      .from("insurance_companies")
+      .select("id, name, logo_url")
+      .eq("active", true)
+      .is("deleted_at", null)
+      .order("sort_order", { ascending: true })
+      .order("name", { ascending: true });
+
+    if (error) throw error;
+
+    const list: LiveInsuranceCompany[] = (data ?? []).map((row) => ({
+      id: String(row.id),
+      name: String(row.name ?? ""),
+      logoUrl: row.logo_url ? String(row.logo_url) : null,
+    }));
+
+    insuranceCache = { data: list, at: Date.now() };
+    return list;
+  } catch (err) {
+    logger.warn("data/live", "fetch insurance companies failed", err);
+    return [];
+  }
+}
+
 export interface LiveDoctor {
   id: string;
   name: string;
