@@ -20,9 +20,9 @@ export const siteConfig = {
     { day: { en: "Friday", ar: "الجمعة" }, hours: { en: "Closed", ar: "مغلق" } },
   ],
   social: {
-    instagram: "https://instagram.com",
+    instagram: "https://www.instagram.com/samacenter_pt/",
     facebook: "https://facebook.com",
-    twitter: "https://x.com",
+    twitter: "https://x.com/SamaCenter_pt",
     youtube: "https://youtube.com",
     linkedin: "https://linkedin.com",
   },

@@ -37,20 +37,11 @@ export function Footer() {
     { href: "/blog", label: nav("blog") },
   ];
 
-  const services = [
-    { href: "/services#physical-therapy", label: "Physical Therapy" },
-    { href: "/services#sports-rehab", label: "Sports Rehabilitation" },
-    { href: "/services#neuro-rehab", label: "Neurological Rehab" },
-    { href: "/services#orthopedic-rehab", label: "Orthopedic Rehab" },
-    { href: "/services#pediatric-therapy", label: "Pediatric Therapy" },
-    { href: "/services#pain-management", label: "Pain Management" },
-  ];
-
   return (
     <footer className="relative overflow-hidden border-t border-border/50 bg-gradient-to-b from-background to-muted/40">
       <div className="pointer-events-none absolute -top-32 start-1/4 h-64 w-64 rounded-full bg-brand/10 blur-3xl" />
       <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
-        <div className="grid gap-12 lg:grid-cols-[1.4fr_1fr_1fr_1.4fr]">
+        <div className="grid gap-12 lg:grid-cols-[1.4fr_1fr_1.4fr]">
           <div>
             <Link href="/" className="flex items-center gap-2.5">
               <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-brand to-accent text-white shadow-lift">
@@ -91,22 +82,6 @@ export function Footer() {
                   >
                     {link.label}
                     <ArrowUpRight className="h-3 w-3 opacity-0 transition-opacity group-hover:opacity-100" />
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </nav>
-
-          <nav aria-label="Services">
-            <h3 className="mb-4 text-sm font-semibold uppercase tracking-wider">{t("services")}</h3>
-            <ul className="space-y-3">
-              {services.map((link) => (
-                <li key={link.href}>
-                  <Link
-                    href={link.href}
-                    className="text-sm text-muted-foreground transition-colors hover:text-primary"
-                  >
-                    {link.label}
                   </Link>
                 </li>
               ))}
