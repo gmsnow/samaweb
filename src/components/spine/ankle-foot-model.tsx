@@ -4,9 +4,13 @@ import {
   useState,
   useRef,
   useEffect,
+  Suspense,
   useCallback,
   useMemo,
 } from "react";
+import { Canvas } from "@react-three/fiber";
+import { ContactShadows } from "@react-three/drei";
+import { EffectComposer, Bloom, Vignette } from "@react-three/postprocessing";
 import { useTranslations } from "next-intl";
 import {
   RotateCcw,
@@ -15,6 +19,10 @@ import {
   PanelLeftOpen,
   PanelLeftClose,
 } from "lucide-react";
+import * as THREE from "three";
+import { Lights } from "./Lights";
+import { AnkleFootScene, ANKLE_SHADOW_Y } from "./AnkleFootScene";
+import { AnkleFootControls } from "./AnkleFootControls";
 import { StructureList, type StructureListItem } from "./StructureList";
 import { InfoPanel, type StructureInfo } from "./InfoPanel";
 import { ToolButton } from "./tool-button";
@@ -25,18 +33,27 @@ import {
   getAnkleFootInfo,
 } from "./ankle-foot-data";
 
-const SKETCHFAB_EMBED_URL =
-  "https://sketchfab.com/models/2e2d0f64ecb743c8844304ff5cf693cf/embed?autostart=1&preload=1&ui_controls=1&ui_infos=0&ui_watermark=0&ui_help=0&ui_theme=dark&ui_related=0&ui_search=0&ui_zoom=1&ui_fullscreen=0&ui_vr=0&ui_ar=0&ui_animations=0&ui_settings=0&ui_inspector=0&ui_annotations=1&ui_stop=0";
+function LoadingFallback() {
+  return (
+    <div className="absolute inset-0 grid place-items-center">
+      <div className="flex flex-col items-center gap-3">
+        <div className="h-10 w-10 animate-spin rounded-full border-2 border-white/15 border-t-sky-400" />
+        <p className="text-sm text-white/50">Loading 3D model…</p>
+      </div>
+    </div>
+  );
+}
 
 export function AnkleFootModel() {
   const t = useTranslations("anatomy.ankleFoot");
   const containerRef = useRef<HTMLDivElement>(null);
   const [selected, setSelected] = useState<string | null>(null);
+  const [focusPos, setFocusPos] = useState<THREE.Vector3 | null>(null);
   const [listHovered, setListHovered] = useState<string | null>(null);
   const [query, setQuery] = useState("");
   const [panelOpen, setPanelOpen] = useState(true);
   const [isFullscreen, setIsFullscreen] = useState(false);
-  const [reloadKey, setReloadKey] = useState(0);
+  const [resetSignal, setResetSignal] = useState(0);
 
   useEffect(() => {
     const onFullscreenChange = () =>
@@ -46,14 +63,18 @@ export function AnkleFootModel() {
       document.removeEventListener("fullscreenchange", onFullscreenChange);
   }, []);
 
-  const handleSelect = useCallback((key: string | null) => {
-    setSelected(key);
-  }, []);
+  const handleSelect = useCallback(
+    (key: string | null, worldPos?: THREE.Vector3) => {
+      setSelected(key);
+      setFocusPos(key && worldPos ? worldPos.clone() : null);
+    },
+    []
+  );
 
-  const handleReload = useCallback(() => {
+  const handleReset = useCallback(() => {
     setSelected(null);
-    setQuery("");
-    setReloadKey((k) => k + 1);
+    setFocusPos(null);
+    setResetSignal((n) => n + 1);
   }, []);
 
   const toggleFullscreen = useCallback(() => {
@@ -100,15 +121,48 @@ export function AnkleFootModel() {
   return (
     <div
       ref={containerRef}
-      className="relative h-[520px] w-full overflow-hidden rounded-3xl border border-white/10 bg-slate-950 [&:fullscreen]:h-screen [&:fullscreen]:w-screen [&:fullscreen]:rounded-none [&:fullscreen]:border-0 sm:h-[680px] lg:h-[800px]"
+      className="relative h-[520px] w-full overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-b from-slate-900/80 to-slate-950/90 backdrop-blur-sm [&:fullscreen]:h-screen [&:fullscreen]:w-screen [&:fullscreen]:rounded-none [&:fullscreen]:border-0 sm:h-[680px] lg:h-[800px]"
     >
-      <iframe
-        key={reloadKey}
-        src={SKETCHFAB_EMBED_URL}
-        title="Foot, Ankle and Ligaments by Soma3D"
-        loading="lazy"
-        className="h-full w-full border-0"
-      />
+      <Suspense fallback={<LoadingFallback />}>
+        <Canvas
+          dpr={[1, 2]}
+          camera={{ position: [2.4, 0.1, 3.6], fov: 45 }}
+          gl={{
+            antialias: true,
+            alpha: true,
+            powerPreference: "high-performance",
+            toneMapping: THREE.ACESFilmicToneMapping,
+            toneMappingExposure: 1.15,
+          }}
+          style={{ background: "transparent" }}
+        >
+          <Lights />
+          <AnkleFootScene
+            selected={selected}
+            listHovered={listHovered}
+            onSelect={handleSelect}
+          />
+          <AnkleFootControls focusPos={focusPos} resetSignal={resetSignal} />
+          <ContactShadows
+            position={[0, ANKLE_SHADOW_Y, 0]}
+            opacity={0.35}
+            scale={10}
+            blur={2.5}
+            far={4}
+            color="#0f172a"
+          />
+          <EffectComposer>
+            <Bloom
+              intensity={0.5}
+              luminanceThreshold={0.2}
+              luminanceSmoothing={0.9}
+              mipmapBlur
+              radius={0.6}
+            />
+            <Vignette offset={0.3} darkness={0.4} />
+          </EffectComposer>
+        </Canvas>
+      </Suspense>
 
       {panelOpen && (
         <div className="absolute inset-y-3 start-3 z-10 flex w-60 sm:start-4 sm:w-72">
@@ -143,7 +197,7 @@ export function AnkleFootModel() {
             <PanelLeftOpen className="h-4 w-4" />
           )}
         </ToolButton>
-        <ToolButton title={t("reset")} onClick={handleReload}>
+        <ToolButton title={t("reset")} onClick={handleReset}>
           <RotateCcw className="h-4 w-4" />
         </ToolButton>
         <ToolButton
