@@ -149,6 +149,16 @@
     "ratingLabel": "Google rating",
     "patients": "patients"
   },
+  "rating": {
+    "title": "How was your experience?",
+    "subtitle": "Rate our website to help us serve you better",
+    "commentPlaceholder": "Tell us more (optional)",
+    "submit": "Submit rating",
+    "dismiss": "Not now",
+    "thanks": "Thank you!",
+    "thanksMsg": "We appreciate you taking the time to share your feedback.",
+    "close": "Close"
+  },
   "gallery": {
     "eyebrow": "Gallery",
     "title": "Inside Our",

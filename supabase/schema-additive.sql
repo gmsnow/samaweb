@@ -134,6 +134,29 @@ create table if not exists public.testimonials (
 alter table public.testimonials enable row level security;
 
 -- ============================================================
+-- SITE REVIEWS (anonymous visitor ratings)
+-- ============================================================
+create table if not exists public.site_reviews (
+  id uuid primary key default gen_random_uuid(),
+  rating integer not null check (rating between 1 and 5),
+  comment text,
+  page text,
+  created_at timestamptz not null default now()
+);
+
+alter table public.site_reviews enable row level security;
+
+drop policy if exists "reviews_insert" on public.site_reviews;
+create policy "reviews_insert" on public.site_reviews
+  for insert with check (true);
+drop policy if exists "reviews_public_read" on public.site_reviews;
+create policy "reviews_public_read" on public.site_reviews
+  for select using (true);
+drop policy if exists "reviews_admin_all" on public.site_reviews;
+create policy "reviews_admin_all" on public.site_reviews
+  for all using (exists (select 1 from public.profiles p where p.id = auth.uid() and p.role = 'admin'));
+
+-- ============================================================
 -- UPDATED_AT TRIGGER (profiles already exists)
 -- ============================================================
 create or replace function public.set_updated_at()
