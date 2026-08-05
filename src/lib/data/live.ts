@@ -175,6 +175,57 @@ export async function fetchLiveTestimonials(): Promise<LiveTestimonial[]> {
   }
 }
 
+export interface LiveBlogPost {
+  id: string;
+  slug: string;
+  titleEn: string;
+  titleAr: string | null;
+  excerptEn: string | null;
+  excerptAr: string | null;
+  contentEn: string | null;
+  contentAr: string | null;
+  coverUrl: string | null;
+  category: string | null;
+  publishedAt: string | null;
+}
+
+let blogCache: { data: LiveBlogPost[]; at: number } | null = null;
+
+export async function fetchLiveBlogPosts(): Promise<LiveBlogPost[]> {
+  if (blogCache && Date.now() - blogCache.at < CACHE_TTL) return blogCache.data;
+
+  try {
+    const { data, error } = await supabaseBrowser
+      .from("blog_posts")
+      .select("id, slug, title_en, title_ar, excerpt_en, excerpt_ar, content_en, content_ar, cover_url, category, published_at")
+      .eq("is_published", true)
+      .order("published_at", { ascending: false })
+      .order("created_at", { ascending: false });
+
+    if (error) throw error;
+
+    const list: LiveBlogPost[] = (data ?? []).map((row) => ({
+      id: String(row.id),
+      slug: String(row.slug ?? ""),
+      titleEn: String(row.title_en ?? ""),
+      titleAr: row.title_ar ? String(row.title_ar) : null,
+      excerptEn: row.excerpt_en ? String(row.excerpt_en) : null,
+      excerptAr: row.excerpt_ar ? String(row.excerpt_ar) : null,
+      contentEn: row.content_en ? String(row.content_en) : null,
+      contentAr: row.content_ar ? String(row.content_ar) : null,
+      coverUrl: row.cover_url ? String(row.cover_url) : null,
+      category: row.category ? String(row.category) : null,
+      publishedAt: row.published_at ? String(row.published_at) : null,
+    }));
+
+    blogCache = { data: list, at: Date.now() };
+    return list;
+  } catch (err) {
+    logger.warn("data/live", "fetch blog posts failed", err);
+    return [];
+  }
+}
+
 export function formatPrice(price: number, locale: string): string {
   return new Intl.NumberFormat(locale === "ar" ? "ar-SA" : "en-US", {
     maximumFractionDigits: 0,

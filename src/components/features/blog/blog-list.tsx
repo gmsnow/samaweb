@@ -8,16 +8,31 @@ import { Clock, ArrowUpRight } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { SectionHeading } from "@/components/shared/section-heading";
-import { blogPosts } from "@/data/content";
-import { BlogImage } from "./blog-image";
-
-const CATEGORIES = ["all", "Ergonomics", "Sports", "Therapy", "Pediatrics", "Pain", "Wellness"];
+import { fetchLiveBlogPosts, type LiveBlogPost } from "@/lib/data/live";
 
 export function BlogList() {
   const t = useTranslations("blog");
   const locale = useLocale();
+  const [posts, setPosts] = React.useState<LiveBlogPost[]>([]);
   const [cat, setCat] = React.useState("all");
-  const posts = cat === "all" ? blogPosts : blogPosts.filter((p) => p.category.en === cat);
+
+  React.useEffect(() => {
+    let active = true;
+    fetchLiveBlogPosts().then((list) => {
+      if (active) setPosts(list);
+    });
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  const categories = React.useMemo(() => {
+    const set = new Set<string>();
+    posts.forEach((p) => p.category && set.add(p.category));
+    return ["all", ...Array.from(set)];
+  }, [posts]);
+
+  const visible = cat === "all" ? posts : posts.filter((p) => p.category === cat);
 
   return (
     <>
@@ -28,10 +43,9 @@ export function BlogList() {
         description={t("description")}
       />
 
-      <div className="mt-8 flex flex-wrap gap-2">
-        {CATEGORIES.map((c) => {
-          const label = c === "all" ? t("allCategories") : (locale === "ar" ? blogPosts.find((p) => p.category.en === c)?.category.ar : c);
-          return (
+      {categories.length > 1 && (
+        <div className="mt-8 flex flex-wrap gap-2">
+          {categories.map((c) => (
             <button
               key={c}
               type="button"
@@ -42,14 +56,14 @@ export function BlogList() {
                   : "bg-muted/50 text-muted-foreground hover:bg-muted"
               }`}
             >
-              {label}
+              {c === "all" ? t("allCategories") : c}
             </button>
-          );
-        })}
-      </div>
+          ))}
+        </div>
+      )}
 
       <div className="mt-10 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-        {posts.map((post, i) => (
+        {visible.map((post, i) => (
           <motion.div
             key={post.slug}
             initial={{ opacity: 0, y: 28 }}
@@ -59,33 +73,40 @@ export function BlogList() {
             <Link href={`/blog/${post.slug}`}>
               <Card className="group h-full overflow-hidden hover:-translate-y-1.5 hover:shadow-lift">
                 <div className="relative overflow-hidden">
-                  <BlogImage
-                    slot={`blog-${post.slug}`}
-                    defaultSrc={post.image}
-                    alt={locale === "ar" ? post.title.ar : post.title.en}
-                    width={800}
-                    height={500}
-                    className="aspect-[16/9] w-full object-cover transition-transform duration-500 group-hover:scale-105"
-                  />
-                  <Badge variant="glass" className="absolute start-4 top-4">
-                    {locale === "ar" ? post.category.ar : post.category.en}
-                  </Badge>
+                  {post.coverUrl ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={post.coverUrl}
+                      alt={locale === "ar" ? post.titleAr ?? post.titleEn : post.titleEn}
+                      className="aspect-[16/9] w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                    />
+                  ) : (
+                    <div className="aspect-[16/9] w-full bg-gradient-to-br from-brand/20 via-accent/10 to-transparent" />
+                  )}
+                  {post.category && (
+                    <Badge variant="glass" className="absolute start-4 top-4">
+                      {post.category}
+                    </Badge>
+                  )}
                 </div>
                 <CardContent className="p-6">
                   <div className="flex items-center gap-3 text-xs text-muted-foreground">
-                    <span>{post.author}</span>
-                    <span>·</span>
-                    <span>{new Date(post.date).toLocaleDateString(locale)}</span>
+                    {post.publishedAt && (
+                      <>
+                        <span>{new Date(post.publishedAt).toLocaleDateString(locale)}</span>
+                        <span>·</span>
+                      </>
+                    )}
                     <span className="inline-flex items-center gap-1">
                       <Clock className="h-3 w-3" />
-                      {post.readTime} min
+                      {t("readTime")}
                     </span>
                   </div>
                   <h3 className="mt-3 text-lg font-semibold leading-snug transition-colors group-hover:text-primary">
-                    {locale === "ar" ? post.title.ar : post.title.en}
+                    {locale === "ar" ? post.titleAr ?? post.titleEn : post.titleEn}
                   </h3>
                   <p className="mt-2 line-clamp-2 text-sm text-muted-foreground">
-                    {locale === "ar" ? post.excerpt.ar : post.excerpt.en}
+                    {locale === "ar" ? post.excerptAr ?? post.excerptEn ?? "" : post.excerptEn ?? ""}
                   </p>
                   <span className="mt-4 inline-flex items-center gap-1 text-sm font-medium text-primary">
                     {t("readMore")}

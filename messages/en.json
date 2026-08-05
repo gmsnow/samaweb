@@ -257,6 +257,7 @@
     "highlight": "Insights",
     "description": "Expert advice on movement, recovery and wellness.",
     "readMore": "Read Article",
+    "readTime": "min read",
     "allCategories": "All"
   },
   "appointment": {
