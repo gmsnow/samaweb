@@ -3,7 +3,7 @@
 import * as React from "react";
 import { motion } from "framer-motion";
 import Image from "next/image";
-import { useTranslations, useLocale } from "next-intl";
+import { useTranslations } from "next-intl";
 import { Check, Sparkles, Landmark } from "lucide-react";
 import { Link } from "@/i18n/navigation";
 import { Card } from "@/components/ui/card";
@@ -19,7 +19,6 @@ import {
 
 export function Pricing() {
   const t = useTranslations("pricing");
-  const locale = useLocale();
   const [live, setLive] = React.useState<LivePackage[]>([]);
   const [companies, setCompanies] = React.useState<LiveInsuranceCompany[]>([]);
 
@@ -36,10 +35,8 @@ export function Pricing() {
     };
   }, []);
 
-  const currency =
-    locale === "ar"
-      ? (price: number) => `${price.toLocaleString("ar-SA")} ر.ي`
-      : (price: number) => `$${price.toLocaleString("en-US")}`;
+  const usd = (price: number) => `$${price.toLocaleString("en-US")}`;
+  const yer = (price: number) => `${price.toLocaleString("ar-SA")} ر.ي`;
 
   return (
     <section id="pricing" className="relative bg-muted/30 py-24 sm:py-32">
@@ -75,8 +72,8 @@ export function Pricing() {
                     ) : null}
                     <h3 className="text-lg font-semibold">{plan.name}</h3>
                     <div className="mt-4 flex items-end gap-1">
-                      <span className="text-4xl font-extrabold text-gradient">{currency(plan.priceUsd)}</span>
-                      <span className="pb-1 text-sm text-muted-foreground">{currency(plan.priceYer)}</span>
+                      <span className="text-4xl font-extrabold text-gradient">{usd(plan.priceUsd)}</span>
+                      <span className="pb-1 text-sm text-muted-foreground">{yer(plan.priceYer)}</span>
                     </div>
                     <ul className="mt-6 space-y-3">
                       {plan.features.map((feature, fi) => (
