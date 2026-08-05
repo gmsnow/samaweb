@@ -94,6 +94,46 @@ export async function fetchLiveServices(): Promise<LiveService[]> {
   }
 }
 
+export interface LivePackage {
+  id: string;
+  name: string;
+  priceUsd: number;
+  priceYer: number;
+  features: string[];
+  popular: boolean;
+}
+
+let packagesCache: { data: LivePackage[]; at: number } | null = null;
+
+export async function fetchLivePackages(): Promise<LivePackage[]> {
+  if (packagesCache && Date.now() - packagesCache.at < CACHE_TTL) return packagesCache.data;
+
+  try {
+    const { data, error } = await supabaseBrowser
+      .from("packages")
+      .select("id, name, price_usd, price_yer, features, popular")
+      .is("deleted_at", null)
+      .order("price_usd", { ascending: true });
+
+    if (error) throw error;
+
+    const list: LivePackage[] = (data ?? []).map((row) => ({
+      id: String(row.id),
+      name: String(row.name ?? ""),
+      priceUsd: Number(row.price_usd ?? 0),
+      priceYer: Number(row.price_yer ?? 0),
+      features: Array.isArray(row.features) ? row.features.map((f) => String(f)) : [],
+      popular: Boolean(row.popular),
+    }));
+
+    packagesCache = { data: list, at: Date.now() };
+    return list;
+  } catch (err) {
+    logger.warn("data/live", "fetch packages failed", err);
+    return [];
+  }
+}
+
 export function formatPrice(price: number, locale: string): string {
   return new Intl.NumberFormat(locale === "ar" ? "ar-SA" : "en-US", {
     maximumFractionDigits: 0,

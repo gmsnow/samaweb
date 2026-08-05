@@ -10,12 +10,29 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { SectionHeading } from "@/components/shared/section-heading";
 import { plans } from "@/data/content";
+import { fetchLivePackages, type LivePackage } from "@/lib/data/live";
 
 const insurance = ["AXA", "Allianz", "Cigna", "MetLife", "Bupa", "Generali"];
 
 export function Pricing() {
   const t = useTranslations("pricing");
   const locale = useLocale();
+  const [live, setLive] = React.useState<LivePackage[] | null>(null);
+
+  React.useEffect(() => {
+    let active = true;
+    fetchLivePackages().then((list) => {
+      if (active && list.length > 0) setLive(list);
+    });
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  const currency =
+    locale === "ar"
+      ? (price: number) => `${price.toLocaleString("ar-SA")} ر.ي`
+      : (price: number) => `$${price.toLocaleString("en-US")}`;
 
   return (
     <section id="pricing" className="relative bg-muted/30 py-24 sm:py-32">
@@ -28,7 +45,55 @@ export function Pricing() {
         />
 
         <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
-          {plans.map((plan, i) => (
+          {(live ?? []).length > 0
+            ? live!.map((plan, i) => (
+                <motion.div
+                  key={plan.id}
+                  initial={{ opacity: 0, y: 32 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, margin: "-60px" }}
+                  transition={{ duration: 0.6, delay: i * 0.1 }}
+                >
+                  <Card
+                    className={`relative h-full p-8 transition-all duration-300 hover:-translate-y-1.5 ${
+                      plan.popular
+                        ? "border-primary/40 bg-gradient-to-b from-brand/[0.07] to-background shadow-lift"
+                        : "hover:shadow-soft"
+                    }`}
+                  >
+                    {plan.popular ? (
+                      <Badge className="absolute -top-3 start-1/2 -translate-x-1/2 gap-1 rtl:translate-x-1/2">
+                        <Sparkles className="h-3 w-3" />
+                        {t("popular")}
+                      </Badge>
+                    ) : null}
+                    <h3 className="text-lg font-semibold">{plan.name}</h3>
+                    <div className="mt-4 flex items-end gap-1">
+                      <span className="text-4xl font-extrabold text-gradient">{currency(plan.priceUsd)}</span>
+                      <span className="pb-1 text-sm text-muted-foreground">{currency(plan.priceYer)}</span>
+                    </div>
+                    <ul className="mt-6 space-y-3">
+                      {plan.features.map((feature, fi) => (
+                        <li key={fi} className="flex items-start gap-2 text-sm">
+                          <Check className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
+                          <span>{feature}</span>
+                        </li>
+                      ))}
+                    </ul>
+                    <div className="mt-8">
+                      <Link href="/appointment">
+                        <Button
+                          className="w-full"
+                          variant={plan.popular ? "accent" : "outline"}
+                        >
+                          {t("book")}
+                        </Button>
+                      </Link>
+                    </div>
+                  </Card>
+                </motion.div>
+              ))
+            : plans.map((plan, i) => (
             <motion.div
               key={plan.id}
               initial={{ opacity: 0, y: 32 }}
