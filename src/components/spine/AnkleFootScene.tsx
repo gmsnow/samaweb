@@ -98,12 +98,18 @@ interface AnkleFootSceneProps {
   selected: string | null;
   listHovered: string | null;
   onSelect: (key: string | null, worldPos?: THREE.Vector3) => void;
+  apiRef?: React.MutableRefObject<AnkleFootSceneApi | null>;
+}
+
+export interface AnkleFootSceneApi {
+  getWorldPosition: (key: string) => THREE.Vector3 | null;
 }
 
 export function AnkleFootScene({
   selected,
   listHovered,
   onSelect,
+  apiRef,
 }: AnkleFootSceneProps) {
   const { scene } = useGLTF("/ankle-foot.glb") as GLTF;
   const groupRef = useRef<THREE.Group>(null);
@@ -151,7 +157,20 @@ export function AnkleFootScene({
         mesh.visible = false;
       }
     });
-  }, [scene]);
+
+    if (apiRef) {
+      apiRef.current = {
+        getWorldPosition: (key: string) => {
+          const meshes = selectables.current.get(key);
+          if (!meshes || meshes.length === 0) return null;
+          return averageWorldPosition(meshes.map((s) => s.mesh));
+        },
+      };
+    }
+    return () => {
+      if (apiRef) apiRef.current = null;
+    };
+  }, [scene, apiRef]);
 
   useFrame((state) => {
     const t = state.clock.elapsedTime;
@@ -188,11 +207,24 @@ export function AnkleFootScene({
     }
   }, [selected]);
 
-  const findKeyFromEvent = useCallback((e: { object: THREE.Object3D }) => {
-    const obj = e.object;
-    if (!(obj instanceof THREE.Mesh)) return null;
-    return meshToKey.current.get(obj) ?? null;
-  }, []);
+  const findKeyFromEvent = useCallback(
+    (e: {
+      object: THREE.Object3D;
+      intersections?: Array<{ object: THREE.Object3D }>;
+    }) => {
+      const hits =
+        e.intersections && e.intersections.length > 0
+          ? e.intersections
+          : [{ object: e.object }];
+      for (const hit of hits) {
+        if (!(hit.object instanceof THREE.Mesh)) continue;
+        const key = meshToKey.current.get(hit.object as THREE.Mesh);
+        if (key) return key;
+      }
+      return null;
+    },
+    []
+  );
 
   const handlePointerOver = useCallback(
     (e: React.PointerEvent<THREE.Group>) => {

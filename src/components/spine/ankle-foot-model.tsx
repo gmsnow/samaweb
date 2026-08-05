@@ -21,7 +21,11 @@ import {
 } from "lucide-react";
 import * as THREE from "three";
 import { Lights } from "./Lights";
-import { AnkleFootScene, ANKLE_SHADOW_Y } from "./AnkleFootScene";
+import {
+  AnkleFootScene,
+  ANKLE_SHADOW_Y,
+  type AnkleFootSceneApi,
+} from "./AnkleFootScene";
 import { AnkleFootControls } from "./AnkleFootControls";
 import { StructureList, type StructureListItem } from "./StructureList";
 import { InfoPanel, type StructureInfo } from "./InfoPanel";
@@ -55,6 +59,7 @@ export function AnkleFootModel() {
   const [panelOpen, setPanelOpen] = useState(true);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [resetSignal, setResetSignal] = useState(0);
+  const sceneApi = useRef<AnkleFootSceneApi | null>(null);
 
   useEffect(() => {
     const onFullscreenChange = () =>
@@ -67,7 +72,16 @@ export function AnkleFootModel() {
   const handleSelect = useCallback(
     (key: string | null, worldPos?: THREE.Vector3) => {
       setSelected(key);
-      setFocusPos(key && worldPos ? worldPos.clone() : null);
+      if (!key) {
+        setFocusPos(null);
+        return;
+      }
+      if (worldPos) {
+        setFocusPos(worldPos.clone());
+        return;
+      }
+      const pos = sceneApi.current?.getWorldPosition(key);
+      setFocusPos(pos ? pos.clone() : null);
     },
     []
   );
@@ -152,6 +166,7 @@ export function AnkleFootModel() {
             selected={selected}
             listHovered={listHovered}
             onSelect={handleSelect}
+            apiRef={sceneApi}
           />
           <AnkleFootControls focusPos={focusPos} resetSignal={resetSignal} />
           <ContactShadows
