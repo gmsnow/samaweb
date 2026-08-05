@@ -12,8 +12,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { services, doctors } from "@/data/content";
-import { fetchLiveServices, formatPrice, type LiveService } from "@/lib/data/live";
+import { services } from "@/data/content";
+import { fetchLiveServices, fetchLiveEmployees, formatPrice, type LiveService, type LiveEmployee } from "@/lib/data/live";
 import { logger } from "@/lib/logger";
 
 const STEPS = [
@@ -67,11 +67,15 @@ export function BookingForm() {
   const [submitting, setSubmitting] = React.useState(false);
   const [selectedTime, setSelectedTime] = React.useState("");
   const [liveServices, setLiveServices] = React.useState<LiveService[] | null>(null);
+  const [liveEmployees, setLiveEmployees] = React.useState<LiveEmployee[] | null>(null);
 
   React.useEffect(() => {
     let active = true;
     fetchLiveServices().then((list) => {
       if (active && list.length > 0) setLiveServices(list);
+    });
+    fetchLiveEmployees().then((list) => {
+      if (active && list.length > 0) setLiveEmployees(list);
     });
     return () => {
       active = false;
@@ -103,7 +107,8 @@ export function BookingForm() {
   const selectedService = liveServices
     ? liveServices.find((s) => s.id === serviceSlug)
     : services.find((s) => s.slug === serviceSlug);
-  const selectedDoctor = doctors.find((d) => d.id === doctorId);
+  const doctorOptions = liveEmployees ?? [];
+  const selectedDoctor = doctorOptions.find((d) => d.id === doctorId);
   const serviceOptions = React.useMemo(
     () =>
       liveServices
@@ -308,7 +313,7 @@ export function BookingForm() {
               <div>
                 <Label className="mb-2 block">{t("selectDoctor")}</Label>
                 <div className="grid gap-2 sm:grid-cols-2">
-                  {doctors.map((d) => (
+                  {doctorOptions.map((d) => (
                     <button
                       key={d.id}
                       type="button"
@@ -320,11 +325,11 @@ export function BookingForm() {
                       }`}
                     >
                       <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-brand to-accent text-xs font-bold text-white">
-                        {d.name.en.replace("Dr. ", "").split(" ").map((x) => x[0]).slice(0, 2).join("")}
+                        {d.name.split(" ").slice(0, 2).map((x) => x[0]).join("")}
                       </span>
                       <div>
-                        <p className="text-sm font-semibold">{d.name.en}</p>
-                        <p className="text-xs text-muted-foreground">{d.specialty.en}</p>
+                        <p className="text-sm font-semibold">{d.name}</p>
+                        <p className="text-xs text-muted-foreground">{d.department ?? ""}</p>
                       </div>
                     </button>
                   ))}
@@ -404,7 +409,7 @@ export function BookingForm() {
               <dl className="space-y-3 rounded-2xl bg-muted/40 p-5 text-sm">
                 <Row label={t("personal")} value={`${firstName ?? ""} ${lastName ?? ""}`} />
                 <Row label={t("service")} value={serviceDisplayName} />
-                <Row label={t("doctor")} value={selectedDoctor?.name.en ?? "—"} />
+                <Row label={t("doctor")} value={selectedDoctor?.name ?? "—"} />
                 <Row label={t("date")} value={date} />
                 <Row label={t("time")} value={selectedTime} />
               </dl>

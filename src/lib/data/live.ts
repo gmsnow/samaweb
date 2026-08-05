@@ -278,7 +278,6 @@ export interface LiveDoctor {
 }
 
 let doctorsCache: { data: LiveDoctor[]; at: number } | null = null;
-
 export async function fetchLiveDoctors(): Promise<LiveDoctor[]> {
   if (doctorsCache && Date.now() - doctorsCache.at < CACHE_TTL) return doctorsCache.data;
 
@@ -307,6 +306,42 @@ export async function fetchLiveDoctors(): Promise<LiveDoctor[]> {
     return list;
   } catch (err) {
     logger.warn("data/live", "fetch doctors failed", err);
+    return [];
+  }
+}
+
+export interface LiveEmployee {
+  id: string;
+  name: string;
+  department: string | null;
+}
+
+let employeesCache: { data: LiveEmployee[]; at: number } | null = null;
+
+export async function fetchLiveEmployees(): Promise<LiveEmployee[]> {
+  if (employeesCache && Date.now() - employeesCache.at < CACHE_TTL) return employeesCache.data;
+
+  try {
+    const { data, error } = await supabaseBrowser
+      .from("employees")
+      .select("id, name, department")
+      .eq("department", "علاج طبيعي")
+      .eq("is_active", true)
+      .is("deleted_at", null)
+      .order("name", { ascending: true });
+
+    if (error) throw error;
+
+    const list: LiveEmployee[] = (data ?? []).map((row) => ({
+      id: String(row.id),
+      name: String(row.name ?? ""),
+      department: row.department ? String(row.department) : null,
+    }));
+
+    employeesCache = { data: list, at: Date.now() };
+    return list;
+  } catch (err) {
+    logger.warn("data/live", "fetch employees failed", err);
     return [];
   }
 }
