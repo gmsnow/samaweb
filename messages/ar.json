@@ -108,6 +108,7 @@
     "highlight": "المتخصصين",
     "description": "أطباء ومعالجون معتمدون بعقود من الخبرة المشتركة.",
     "experience": "سنة",
+    "specialist": "متخصص",
     "book": "احجز جلسة"
   },
   "treatments": {

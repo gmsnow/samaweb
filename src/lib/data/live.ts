@@ -99,3 +99,48 @@ export function formatPrice(price: number, locale: string): string {
     maximumFractionDigits: 0,
   }).format(price);
 }
+
+export interface LiveDoctor {
+  id: string;
+  name: string;
+  nameAr: string | null;
+  specialty: string;
+  specialtyAr: string | null;
+  photoUrl: string | null;
+  experienceYears: number;
+  rating: number;
+}
+
+let doctorsCache: { data: LiveDoctor[]; at: number } | null = null;
+
+export async function fetchLiveDoctors(): Promise<LiveDoctor[]> {
+  if (doctorsCache && Date.now() - doctorsCache.at < CACHE_TTL) return doctorsCache.data;
+
+  try {
+    const { data, error } = await supabaseBrowser
+      .from("doctors")
+      .select("id, name, name_ar, specialty, specialty_ar, photo_url, experience_years, rating")
+      .eq("is_active", true)
+      .order("sort_order", { ascending: true })
+      .order("created_at", { ascending: true });
+
+    if (error) throw error;
+
+    const list: LiveDoctor[] = (data ?? []).map((row) => ({
+      id: String(row.id),
+      name: String(row.name ?? ""),
+      nameAr: row.name_ar ? String(row.name_ar) : null,
+      specialty: String(row.specialty ?? ""),
+      specialtyAr: row.specialty_ar ? String(row.specialty_ar) : null,
+      photoUrl: row.photo_url ? String(row.photo_url) : null,
+      experienceYears: Number(row.experience_years ?? 0),
+      rating: Number(row.rating ?? 0),
+    }));
+
+    doctorsCache = { data: list, at: Date.now() };
+    return list;
+  } catch (err) {
+    logger.warn("data/live", "fetch doctors failed", err);
+    return [];
+  }
+}

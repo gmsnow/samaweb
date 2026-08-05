@@ -108,6 +108,7 @@
     "highlight": "Specialists",
     "description": "Board-certified physicians and therapists with decades of combined experience.",
     "experience": "Years",
+    "specialist": "Specialist",
     "book": "Book a Session"
   },
   "treatments": {
