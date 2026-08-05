@@ -623,7 +623,12 @@ export function HeroScene() {
       </Environment>
       <PulsingPointLight />
       <ParallaxLayer />
-      <EffectComposer multisampling={isMobile ? 0 : 8}>
+      <EffectComposer
+        multisampling={isMobile ? 0 : 8}
+        frameBufferType={
+          isMobile ? THREE.UnsignedByteType : THREE.HalfFloatType
+        }
+      >
         <Bloom
           intensity={0.7}
           luminanceThreshold={0.15}
