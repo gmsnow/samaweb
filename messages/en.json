@@ -217,9 +217,9 @@
     "ankleFoot": {
       "eyebrow": "Interactive 3D Model",
       "title": "Ankle & Foot",
-      "highlight": "Nerves, Arteries & Ligaments",
-      "description": "An interactive 3D model of the ankle and foot, rendered locally for fast loading. Use the sidebar to explore the key nerves, arteries and ligaments.",
-      "searchPlaceholder": "Search structures…",
+      "highlight": "Bones, Nerves, Arteries & Ligaments",
+      "description": "An interactive 3D model of the ankle and foot, rendered locally for fast loading. Use the sidebar or click any structure in the 3D view to explore every bone, nerve, artery and ligament.",
+      "searchPlaceholder": "Search bones, nerves, arteries…",
       "structures": "Structures",
       "noResults": "No structures found",
       "reset": "Reset view",
@@ -229,6 +229,7 @@
       "hint": "Select a structure from the sidebar to learn more",
       "attribution": "Model: Ankle & Foot — Open Anatomy Project (LUMC), CC BY-SA",
       "categories": {
+        "bones": "Bones",
         "nerves": "Nerves",
         "arteries": "Arteries",
         "ligaments": "Ligaments"

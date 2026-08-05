@@ -1,4 +1,8 @@
-export type AnkleFootCategory = "nerves" | "arteries" | "ligaments";
+export type AnkleFootCategory =
+  | "nerves"
+  | "arteries"
+  | "ligaments"
+  | "bones";
 
 export interface AnkleFootStructure {
   id: string;
@@ -9,16 +13,26 @@ export interface AnkleFootStructure {
   nodes: string[];
 }
 
+export interface AnkleFootBone {
+  id: string;
+  fullName: string;
+  category: "bones";
+  description: string;
+  nodes: string[];
+}
+
 export const ANKLE_FOOT_CATEGORY_COLORS: Record<AnkleFootCategory, string> = {
   nerves: "#a78bfa",
   arteries: "#f87171",
   ligaments: "#34d399",
+  bones: "#60a5fa",
 };
 
 export const ANKLE_FOOT_CATEGORY_ORDER: AnkleFootCategory[] = [
+  "bones",
+  "ligaments",
   "nerves",
   "arteries",
-  "ligaments",
 ];
 
 export const ANKLE_FOOT_STRUCTURES: AnkleFootStructure[] = [
@@ -196,8 +210,232 @@ export const ANKLE_FOOT_STRUCTURES: AnkleFootStructure[] = [
   },
 ];
 
+export const ANKLE_FOOT_BONES: AnkleFootBone[] = [
+  {
+    id: "bone-talus",
+    fullName: "Talus",
+    category: "bones",
+    description:
+      "The keystone of the ankle. Transfers body weight from the tibia to the foot and articulates with the fibula, calcaneus and navicular.",
+    nodes: ["Talus.r"],
+  },
+  {
+    id: "bone-calcaneus",
+    fullName: "Calcaneus",
+    category: "bones",
+    description:
+      "The largest tarsal bone; forms the heel and the posterior pillar of the longitudinal arch, anchoring the Achilles tendon.",
+    nodes: ["Calcaneus.r"],
+  },
+  {
+    id: "bone-navicular",
+    fullName: "Navicular Bone",
+    category: "bones",
+    description:
+      "Boat-shaped tarsal bone articulating with the talus and the three cuneiforms; a landmark of the medial longitudinal arch.",
+    nodes: ["Navicular bone.r"],
+  },
+  {
+    id: "bone-cuboid",
+    fullName: "Cuboid Bone",
+    category: "bones",
+    description:
+      "Lateral tarsal bone that forms the lateral column and articulates with the calcaneus and the fourth and fifth metatarsals.",
+    nodes: ["Cuboid bone.r"],
+  },
+  {
+    id: "bone-medial-cuneiform",
+    fullName: "Medial Cuneiform",
+    category: "bones",
+    description:
+      "Medial cuneiform articulating with the first metatarsal, the navicular and the intermediate cuneiform.",
+    nodes: ["Medial cuneiform bone.r"],
+  },
+  {
+    id: "bone-intermediate-cuneiform",
+    fullName: "Intermediate Cuneiform",
+    category: "bones",
+    description:
+      "The middle cuneiform, wedged between the navicular and the second metatarsal.",
+    nodes: ["Intermediate cuneiform bone.r"],
+  },
+  {
+    id: "bone-lateral-cuneiform",
+    fullName: "Lateral Cuneiform",
+    category: "bones",
+    description:
+      "Lateral cuneiform articulating with the third metatarsal and the cuboid.",
+    nodes: ["Lateral cuneiform bone.r"],
+  },
+  {
+    id: "bone-tibia",
+    fullName: "Tibia",
+    category: "bones",
+    description:
+      "The main weight-bearing bone of the lower leg; its lower end forms the medial malleolus of the ankle.",
+    nodes: ["Tibia.r"],
+  },
+  {
+    id: "bone-fibula",
+    fullName: "Fibula",
+    category: "bones",
+    description:
+      "The slender lateral bone of the lower leg; its lower end forms the lateral malleolus and stabilizes the ankle.",
+    nodes: ["Fibula.r"],
+  },
+  {
+    id: "bone-mt1",
+    fullName: "First Metatarsal",
+    category: "bones",
+    description:
+      "The thickest and shortest metatarsal; bears a large share of body weight at the ball of the foot.",
+    nodes: ["First metatarsal bone.r"],
+  },
+  {
+    id: "bone-mt2",
+    fullName: "Second Metatarsal",
+    category: "bones",
+    description:
+      "Metatarsal at the apex of the transverse arch; the Lisfranc ligament attaches to its base.",
+    nodes: ["Second metatarsal bone.r"],
+  },
+  {
+    id: "bone-mt3",
+    fullName: "Third Metatarsal",
+    category: "bones",
+    description:
+      "Central metatarsal articulating with the lateral cuneiform.",
+    nodes: ["Third metatarsal bone.r"],
+  },
+  {
+    id: "bone-mt4",
+    fullName: "Fourth Metatarsal",
+    category: "bones",
+    description:
+      "Metatarsal articulating with the cuboid and the fifth metatarsal.",
+    nodes: ["Fourth metatarsal bone.r"],
+  },
+  {
+    id: "bone-mt5",
+    fullName: "Fifth Metatarsal",
+    category: "bones",
+    description:
+      "The most lateral metatarsal; its base carries the tuberosity where the peroneus brevis attaches.",
+    nodes: ["Fifth metatarsal bone.r"],
+  },
+  {
+    id: "bone-p1-1",
+    fullName: "Proximal Phalanx, 1st Toe",
+    category: "bones",
+    description: "The first bone of the big toe, forming its proximal segment.",
+    nodes: ["Proximal phalanx of first finger of foot.r"],
+  },
+  {
+    id: "bone-p1-2",
+    fullName: "Proximal Phalanx, 2nd Toe",
+    category: "bones",
+    description: "The proximal bone of the second toe.",
+    nodes: ["Proximal phalanx of second finger of foot.r"],
+  },
+  {
+    id: "bone-p1-3",
+    fullName: "Proximal Phalanx, 3rd Toe",
+    category: "bones",
+    description: "The proximal bone of the third toe.",
+    nodes: ["Proximal phalanx of third finger of foot.r"],
+  },
+  {
+    id: "bone-p1-4",
+    fullName: "Proximal Phalanx, 4th Toe",
+    category: "bones",
+    description: "The proximal bone of the fourth toe.",
+    nodes: ["Proximal phalanx of fourth finger of foot.r"],
+  },
+  {
+    id: "bone-p1-5",
+    fullName: "Proximal Phalanx, 5th Toe",
+    category: "bones",
+    description: "The proximal bone of the fifth (little) toe.",
+    nodes: ["Proximal phalanx of fifth finger of foot.r"],
+  },
+  {
+    id: "bone-p2-2",
+    fullName: "Middle Phalanx, 2nd Toe",
+    category: "bones",
+    description: "The middle bone of the second toe.",
+    nodes: ["Middle phalanx of second finger of foot.r"],
+  },
+  {
+    id: "bone-p2-3",
+    fullName: "Middle Phalanx, 3rd Toe",
+    category: "bones",
+    description: "The middle bone of the third toe.",
+    nodes: ["Middle phalanx of third finger of foot.r"],
+  },
+  {
+    id: "bone-p2-4",
+    fullName: "Middle Phalanx, 4th Toe",
+    category: "bones",
+    description: "The middle bone of the fourth toe.",
+    nodes: ["Middle phalanx of fourth finger of foot.r"],
+  },
+  {
+    id: "bone-p2-5",
+    fullName: "Middle Phalanx, 5th Toe",
+    category: "bones",
+    description: "The middle bone of the fifth (little) toe.",
+    nodes: ["Middle phalanx of fifth finger of foot.r"],
+  },
+  {
+    id: "bone-p3-1",
+    fullName: "Distal Phalanx, 1st Toe",
+    category: "bones",
+    description: "The terminal bone of the big toe, supporting the nail.",
+    nodes: ["Distal phalanx of first finger of foot.r"],
+  },
+  {
+    id: "bone-p3-2",
+    fullName: "Distal Phalanx, 2nd Toe",
+    category: "bones",
+    description: "The terminal bone of the second toe, supporting the nail.",
+    nodes: ["Distal phalanx of second finger of foot.r"],
+  },
+  {
+    id: "bone-p3-3",
+    fullName: "Distal Phalanx, 3rd Toe",
+    category: "bones",
+    description: "The terminal bone of the third toe, supporting the nail.",
+    nodes: ["Distal phalanx of third finger of foot.r"],
+  },
+  {
+    id: "bone-p3-4",
+    fullName: "Distal Phalanx, 4th Toe",
+    category: "bones",
+    description: "The terminal bone of the fourth toe, supporting the nail.",
+    nodes: ["Distal phalanx of fourth finger of foot.r"],
+  },
+  {
+    id: "bone-p3-5",
+    fullName: "Distal Phalanx, 5th Toe",
+    category: "bones",
+    description: "The terminal bone of the fifth (little) toe, supporting the nail.",
+    nodes: ["Distal phalanx of fifth finger of foot.r"],
+  },
+  {
+    id: "bone-sesamoid",
+    fullName: "Sesamoid Bones",
+    category: "bones",
+    description:
+      "Two small bones embedded in the flexor hallucis brevis tendon beneath the first metatarsal head; they protect the tendon and improve leverage.",
+    nodes: ["Sesamoid bones of foot.r"],
+  },
+];
+
 export function getAnkleFootInfo(
   id: string
-): AnkleFootStructure | undefined {
-  return ANKLE_FOOT_STRUCTURES.find((s) => s.id === id);
+): AnkleFootStructure | AnkleFootBone | undefined {
+  return (
+    ANKLE_FOOT_STRUCTURES.find((s) => s.id === id) ??
+    ANKLE_FOOT_BONES.find((b) => b.id === id)
+  );
 }

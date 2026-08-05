@@ -28,6 +28,7 @@ import { InfoPanel, type StructureInfo } from "./InfoPanel";
 import { ToolButton } from "./tool-button";
 import {
   ANKLE_FOOT_STRUCTURES,
+  ANKLE_FOOT_BONES,
   ANKLE_FOOT_CATEGORY_COLORS,
   ANKLE_FOOT_CATEGORY_ORDER,
   getAnkleFootInfo,
@@ -87,13 +88,23 @@ export function AnkleFootModel() {
 
   const items = useMemo<StructureListItem[]>(
     () =>
-      ANKLE_FOOT_STRUCTURES.map((s) => ({
-        key: s.id,
-        label: s.label,
-        fullName: s.fullName,
-        category: s.category,
-        color: ANKLE_FOOT_CATEGORY_COLORS[s.category],
-      })),
+      [...ANKLE_FOOT_BONES, ...ANKLE_FOOT_STRUCTURES].map((s) => {
+        const label =
+          "label" in s
+            ? s.label
+            : s.fullName
+                .replace(/,.*$/, "")
+                .split(/\s+/)
+                .map((w) => w.charAt(0).toUpperCase())
+                .join("");
+        return {
+          key: s.id,
+          label,
+          fullName: s.fullName,
+          category: s.category,
+          color: ANKLE_FOOT_CATEGORY_COLORS[s.category],
+        };
+      }),
     []
   );
 

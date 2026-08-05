@@ -9,6 +9,7 @@ import {
   getAnkleFootInfo,
   ANKLE_FOOT_CATEGORY_COLORS,
   ANKLE_FOOT_STRUCTURES,
+  ANKLE_FOOT_BONES,
 } from "./ankle-foot-data";
 
 useGLTF.preload("/ankle-foot.glb");
@@ -50,12 +51,20 @@ const CATEGORY_LABEL: Record<string, string> = {
   nerves: "Nerves",
   arteries: "Arteries",
   ligaments: "Ligaments",
+  bones: "Bones",
 };
 
 const STRUCTURE_NODE_KEYS: Map<string, string> = new Map();
 for (const s of ANKLE_FOOT_STRUCTURES) {
   for (const node of s.nodes) {
     STRUCTURE_NODE_KEYS.set(node, s.id);
+  }
+}
+
+const BONE_NODE_KEYS: Map<string, string> = new Map();
+for (const b of ANKLE_FOOT_BONES) {
+  for (const node of b.nodes) {
+    BONE_NODE_KEYS.set(node, b.id);
   }
 }
 
@@ -98,7 +107,7 @@ export function AnkleFootScene({
 }: AnkleFootSceneProps) {
   const { scene } = useGLTF("/ankle-foot.glb") as GLTF;
   const groupRef = useRef<THREE.Group>(null);
-  const structures = useRef<Map<string, MeshState[]>>(new Map());
+  const selectables = useRef<Map<string, MeshState[]>>(new Map());
   const meshToKey = useRef<Map<THREE.Mesh, string>>(new Map());
   const [hovered, setHovered] = useState<string | null>(null);
   const [hoveredPos, setHoveredPos] = useState<THREE.Vector3 | null>(null);
@@ -106,7 +115,7 @@ export function AnkleFootScene({
 
   useEffect(() => {
     if (!groupRef.current) return;
-    structures.current.clear();
+    selectables.current.clear();
     meshToKey.current.clear();
 
     groupRef.current.traverse((child) => {
@@ -114,20 +123,24 @@ export function AnkleFootScene({
       const mesh = child as THREE.Mesh;
       if (Array.isArray(mesh.material)) return;
 
-      const key = STRUCTURE_NODE_KEYS.get(mesh.name);
-      if (key) {
+      const group = findTopLevelGroup(mesh);
+      const structKey = STRUCTURE_NODE_KEYS.get(mesh.name);
+      const boneKey = BONE_NODE_KEYS.get(mesh.name);
+
+      if (structKey || boneKey) {
         const mat = mesh.material as THREE.MeshStandardMaterial;
         const cloned = mat.clone();
+        if (group === "Bones") cloned.color.set(SPINE_BONE_COLOR);
         mesh.material = cloned;
         mesh.visible = true;
+        const key = structKey ?? boneKey!;
         meshToKey.current.set(mesh, key);
-        const list = structures.current.get(key) ?? [];
+        const list = selectables.current.get(key) ?? [];
         list.push({ key, mesh, originalEmissive: cloned.emissive.clone() });
-        structures.current.set(key, list);
+        selectables.current.set(key, list);
         return;
       }
 
-      const group = findTopLevelGroup(mesh);
       if (group && VISIBLE_GROUPS.has(group)) {
         const mat = mesh.material as THREE.MeshStandardMaterial;
         const cloned = mat.clone();
@@ -144,7 +157,7 @@ export function AnkleFootScene({
     const t = state.clock.elapsedTime;
     const highlight = hovered ?? listHovered;
 
-    structures.current.forEach((meshes, key) => {
+    selectables.current.forEach((meshes, key) => {
       const info = getAnkleFootInfo(key);
       const color = info
         ? ANKLE_FOOT_CATEGORY_COLORS[info.category]
@@ -169,7 +182,7 @@ export function AnkleFootScene({
 
   useEffect(() => {
     if (!selected) return;
-    const meshes = structures.current.get(selected);
+    const meshes = selectables.current.get(selected);
     if (meshes && meshes.length) {
       setSelectedPos(averageWorldPosition(meshes.map((s) => s.mesh)));
     }
@@ -186,7 +199,7 @@ export function AnkleFootScene({
       const key = findKeyFromEvent(e as unknown as { object: THREE.Object3D });
       if (key) {
         setHovered(key);
-        const meshes = structures.current.get(key);
+        const meshes = selectables.current.get(key);
         if (meshes?.length) {
           setHoveredPos(averageWorldPosition(meshes.map((s) => s.mesh)));
         }
@@ -208,7 +221,7 @@ export function AnkleFootScene({
       if (!key) return;
       const newKey = selected === key ? null : key;
       if (newKey) {
-        const meshes = structures.current.get(newKey);
+        const meshes = selectables.current.get(newKey);
         if (meshes?.length) {
           onSelect(newKey, averageWorldPosition(meshes.map((s) => s.mesh)));
         } else {
