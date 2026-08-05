@@ -115,60 +115,6 @@ export const blogPosts: BlogPost[] = [
   { slug: "posture-and-technology", title: { en: "Posture in the Age of Smartphones", ar: "الوضعية في عصر الهواتف الذكية" }, excerpt: { en: "Tech-neck is real. Here's how to reset your spine in 10 minutes a day.", ar: "رقبة التقنية حقيقة. إليك كيفية إعادة ضبط عمودك الفقري في 10 دقائق يومياً." }, category: { en: "Wellness", ar: "العافية" }, author: "Dr. Amina Al-Rashid", date: "2026-06-02", image: img("posture", 800, 500), readTime: 6 },
 ];
 
-export interface Plan {
-  id: string;
-  name: Localized;
-  price: number;
-  perSession: boolean;
-  popular: boolean;
-  features: Localized[];
-}
-
-export const plans: Plan[] = [
-  {
-    id: "starter",
-    name: { en: "Starter", ar: "الأساسية" },
-    price: 60,
-    perSession: true,
-    popular: false,
-    features: [
-      { en: "1 therapy session", ar: "جلسة علاج واحدة" },
-      { en: "Full assessment", ar: "تقييم كامل" },
-      { en: "Standard modalities", ar: "أنماط علاج قياسية" },
-      { en: "Home exercise plan", ar: "خطة تمارين منزلية" },
-    ],
-  },
-  {
-    id: "recovery",
-    name: { en: "Recovery", ar: "التعافي" },
-    price: 290,
-    perSession: true,
-    popular: true,
-    features: [
-      { en: "5 therapy sessions", ar: "5 جلسات علاج" },
-      { en: "Personalized program", ar: "برنامج مخصص" },
-      { en: "Advanced modalities", ar: "أنماط علاج متقدمة" },
-      { en: "Progress tracking", ar: "تتبع التقدم" },
-      { en: "Priority booking", ar: "حجز بأولوية" },
-    ],
-  },
-  {
-    id: "elite",
-    name: { en: "Elite", ar: "التميّز" },
-    price: 1200,
-    perSession: true,
-    popular: false,
-    features: [
-      { en: "20 therapy sessions", ar: "20 جلسة علاج" },
-      { en: "Dedicated specialist", ar: "أخصائي مخصص" },
-      { en: "All modalities incl. shockwave", ar: "كل الأنماط بما فيها الموجات الصادمة" },
-      { en: "Home visits available", ar: "زيارات منزلية متاحة" },
-      { en: "24/7 support", ar: "دعم على مدار الساعة" },
-      { en: "Family discounts", ar: "خصومات للعائلة" },
-    ],
-  },
-];
-
 export interface GalleryItem {
   id: string;
   src: string;

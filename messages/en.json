@@ -218,7 +218,7 @@
       "eyebrow": "Interactive 3D Model",
       "title": "Ankle & Foot",
       "highlight": "Nerves, Arteries & Ligaments",
-      "description": "An interactive 3D model of the bones and ligaments of the ankle and foot, embedded from Sketchfab. Use the sidebar to search and explore the key structures.",
+      "description": "An interactive 3D model of the ankle and foot, rendered locally for fast loading. Use the sidebar to explore the key nerves, arteries and ligaments.",
       "searchPlaceholder": "Search structures…",
       "structures": "Structures",
       "noResults": "No structures found",
@@ -227,7 +227,7 @@
       "exitFullscreen": "Exit fullscreen",
       "togglePanel": "Toggle structures panel",
       "hint": "Select a structure from the sidebar to learn more",
-      "attribution": "Model: Foot, Ankle and Ligaments by Soma3D (soma3D.com) via Sketchfab",
+      "attribution": "Model: Ankle & Foot — Open Anatomy Project (LUMC), CC BY-SA",
       "categories": {
         "nerves": "Nerves",
         "arteries": "Arteries",
@@ -241,7 +241,6 @@
     "highlight": "Plans",
     "description": "Flexible packages to fit your recovery goals and budget.",
     "popular": "Most Popular",
-    "perSession": "per session",
     "book": "Choose Plan",
     "insurance": "Insurance Partners",
     "insuranceText": "We accept all major insurance providers. Contact us to verify your coverage."
