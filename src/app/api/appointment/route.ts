@@ -6,7 +6,7 @@ const appointmentSchema = z.object({
   firstName: z.string().min(2).max(80),
   lastName: z.string().min(2).max(80),
   phone: z.string().min(8).max(30),
-  email: z.string().email(),
+  email: z.string().email().optional().default(""),
   message: z.string().max(2000).optional().default(""),
   service: z.string().min(1).max(120),
   doctor: z.string().min(1).max(120),

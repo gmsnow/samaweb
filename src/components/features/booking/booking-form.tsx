@@ -27,7 +27,6 @@ const formSchema = z.object({
   firstName: z.string().min(2, "required"),
   lastName: z.string().min(2, "required"),
   phone: z.string().min(8, "invalidPhone"),
-  email: z.string().email("invalidEmail"),
   message: z.string().optional(),
   service: z.string().min(1, "required"),
   doctor: z.string().min(1, "required"),
@@ -263,13 +262,6 @@ export function BookingForm() {
                 <Input id="phone" type="tel" dir="ltr" {...register("phone")} placeholder="+966 5X XXX XXXX" />
                 {errors.phone && (
                   <p className="text-xs text-red-500">{t(errors.phone.message ?? "invalidPhone")}</p>
-                )}
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="email">{t("email")}</Label>
-                <Input id="email" type="email" dir="ltr" {...register("email")} placeholder="you@example.com" />
-                {errors.email && (
-                  <p className="text-xs text-red-500">{t(errors.email.message ?? "invalidEmail")}</p>
                 )}
               </div>
               <div className="space-y-2">
