@@ -534,10 +534,19 @@ function PulsingPointLight() {
 
 /* ─── Hero Scene (exported) ───────────────────────────────────────── */
 
+function useIsMobile() {
+  return React.useMemo(() => {
+    if (typeof navigator === "undefined") return false;
+    return /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent);
+  }, []);
+}
+
 export function HeroScene() {
+  const isMobile = useIsMobile();
+
   return (
     <Canvas
-      dpr={[1, 2]}
+      dpr={isMobile ? [1, 1.5] : [1, 2]}
       camera={{ position: [0, 0, 6.5], fov: 45 }}
       gl={{
         antialias: true,
@@ -549,6 +558,19 @@ export function HeroScene() {
       style={{ background: "transparent" }}
       aria-label="3D medical visualization of spine and DNA"
       role="img"
+      onCreated={({ gl }) => {
+        const canvas = gl.domElement;
+        canvas.addEventListener(
+          "webglcontextlost",
+          (e) => e.preventDefault(),
+          false
+        );
+        canvas.addEventListener(
+          "webglcontextrestored",
+          () => window.location.reload(),
+          false
+        );
+      }}
     >
       <hemisphereLight args={["#fff8ef", "#3a2c1a", 0.55]} />
       <ambientLight intensity={0.3} />
@@ -601,7 +623,7 @@ export function HeroScene() {
       </Environment>
       <PulsingPointLight />
       <ParallaxLayer />
-      <EffectComposer>
+      <EffectComposer multisampling={isMobile ? 0 : 8}>
         <Bloom
           intensity={0.7}
           luminanceThreshold={0.15}
