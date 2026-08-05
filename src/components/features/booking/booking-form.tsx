@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { motion, AnimatePresence } from "framer-motion";
 import { useForm, useWatch } from "react-hook-form";
 import { z } from "zod";
@@ -61,6 +61,7 @@ function getNextDays(count: number) {
 }
 
 export function BookingForm() {
+  const locale = useLocale();
   const t = useTranslations("appointment");
   const [step, setStep] = React.useState(0);
   const [done, setDone] = React.useState(false);
@@ -110,14 +111,14 @@ export function BookingForm() {
         ? liveServices.map((s) => ({
             value: s.id,
             label: s.name,
-            sub: `${formatPrice(s.price, "ar")} ر.س`,
+            sub: `${formatPrice(s.price, locale)} ${locale === "ar" ? "ريال" : "YER"}`,
           }))
         : services.map((s) => ({
             value: s.slug,
             label: s.name.en,
             sub: s.desc.en,
           })),
-    [liveServices]
+    [liveServices, locale]
   );
   const serviceDisplayName =
     selectedService == null

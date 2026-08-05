@@ -47,7 +47,7 @@ export function AdminAnalytics() {
 
       <div className="grid gap-6 lg:grid-cols-2">
         <div className="glass-strong rounded-3xl p-6">
-          <h3 className="mb-4 font-semibold">Revenue (SAR)</h3>
+          <h3 className="mb-4 font-semibold">Revenue (YER)</h3>
           <div className="h-64">
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart data={revenueByMonth}>

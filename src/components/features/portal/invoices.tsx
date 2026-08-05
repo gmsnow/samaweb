@@ -21,7 +21,7 @@ export function PortalInvoices() {
         <div>
           <p className="text-sm text-muted-foreground">{t("totalSpent")}</p>
           <p className="text-3xl font-extrabold">
-            {fmt.format(totalSpent)} SAR
+            {fmt.format(totalSpent)} {locale === "ar" ? "ريال" : "YER"}
           </p>
         </div>
       </div>

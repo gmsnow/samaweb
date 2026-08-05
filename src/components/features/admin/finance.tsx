@@ -33,13 +33,13 @@ export function AdminFinance() {
       <div className="glass-strong rounded-3xl bg-gradient-to-br from-brand/10 to-accent/10 p-6">
         <p className="text-sm text-muted-foreground">{t("revenue")} (YTD)</p>
         <p className="text-4xl font-extrabold">
-          {(totalRevenue / 1000).toFixed(0)}K <span className="text-lg text-muted-foreground">SAR</span>
+          {(totalRevenue / 1000).toFixed(0)}K <span className="text-lg text-muted-foreground">YER</span>
         </p>
       </div>
 
       <div className="grid gap-6 lg:grid-cols-2">
         <div className="glass-strong rounded-3xl p-6">
-          <h3 className="mb-4 font-semibold">Monthly Revenue (SAR)</h3>
+          <h3 className="mb-4 font-semibold">Monthly Revenue (YER)</h3>
           <div className="h-64">
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={revenueByMonth}>

@@ -74,7 +74,7 @@ export const appointmentsByDay = [
 
 export const adminNotifications = [
   { id: "n1", title: "New appointment request", body: "Khalid Mahmoud requested Neuro Rehab for Aug 5.", time: "10 min ago", read: false },
-  { id: "n2", title: "Payment received", body: "INV-301 marked as paid — 1,800 SAR.", time: "1 hour ago", read: false },
+  { id: "n2", title: "Payment received", body: "INV-301 marked as paid — 1,800 YER.", time: "1 hour ago", read: false },
   { id: "n3", title: "Report ready for review", body: "RPT-201 uploaded by Dr. Lina Farouk.", time: "3 hours ago", read: true },
   { id: "n4", title: "Patient joined", body: "New patient account created — James Carter.", time: "Yesterday", read: true },
 ];

@@ -132,7 +132,7 @@ export const demoPrograms: PortalProgram[] = [
 ];
 
 export const demoInvoices: PortalInvoice[] = [
-  { id: "INV-301", description: "Sports Rehab Session × 6", amount: 1800, currency: "SAR", status: "paid", issuedAt: "2026-07-29" },
-  { id: "INV-302", description: "Orthopedic Rehab Session × 4", amount: 1200, currency: "SAR", status: "unpaid", issuedAt: "2026-08-01" },
-  { id: "INV-299", description: "Initial Assessment", amount: 250, currency: "SAR", status: "paid", issuedAt: "2026-07-12" },
+  { id: "INV-301", description: "Sports Rehab Session × 6", amount: 1800, currency: "YER", status: "paid", issuedAt: "2026-07-29" },
+  { id: "INV-302", description: "Orthopedic Rehab Session × 4", amount: 1200, currency: "YER", status: "unpaid", issuedAt: "2026-08-01" },
+  { id: "INV-299", description: "Initial Assessment", amount: 250, currency: "YER", status: "paid", issuedAt: "2026-07-12" },
 ];

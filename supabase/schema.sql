@@ -146,7 +146,7 @@ create table public.invoices (
   patient_id uuid not null references public.profiles(id) on delete cascade,
   appointment_id uuid references public.appointments(id) on delete set null,
   amount numeric(10,2) not null,
-  currency text not null default 'SAR',
+  currency text not null default 'YER',
   status text not null default 'unpaid' check (status in ('unpaid', 'paid', 'refunded', 'partially_paid')),
   description text,
   issued_at timestamptz not null default now(),

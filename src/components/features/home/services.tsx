@@ -61,7 +61,7 @@ export function Services({ initialServices }: { initialServices?: LiveService[] 
                       <p className="mt-2 text-sm font-medium text-primary">
                         {formatPrice(service.price, locale)}{" "}
                         <span className="text-xs text-muted-foreground">
-                          {locale === "ar" ? "ر.س" : "SAR"}
+                          {locale === "ar" ? "ريال" : "YER"}
                         </span>
                       </p>
                       <span className="mt-4 inline-flex items-center gap-1 text-sm font-medium text-primary opacity-0 transition-opacity group-hover:opacity-100">
