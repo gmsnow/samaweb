@@ -152,7 +152,12 @@ export function BookingForm() {
       const res = await fetch("/api/appointment", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...data, time: selectedTime }),
+        body: JSON.stringify({
+          ...data,
+          time: selectedTime,
+          serviceName: serviceDisplayName === "—" ? data.service : serviceDisplayName,
+          doctorName: selectedDoctor?.name ?? data.doctor,
+        }),
       });
       if (!res.ok) throw new Error("Request failed");
       setDone(true);

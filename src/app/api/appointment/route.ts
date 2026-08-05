@@ -9,7 +9,9 @@ const appointmentSchema = z.object({
   email: z.string().email().optional().default(""),
   message: z.string().max(2000).optional().default(""),
   service: z.string().min(1).max(120),
+  serviceName: z.string().optional().default(""),
   doctor: z.string().min(1).max(120),
+  doctorName: z.string().optional().default(""),
   date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
   time: z.string().regex(/^\d{2}:\d{2}$/),
 });
@@ -35,15 +37,20 @@ export async function POST(request: Request) {
       try {
         const { createClient } = await import("@/lib/supabase/server");
         const supabase = await createClient();
+        const notes = [
+          data.serviceName ? `الخدمة: ${data.serviceName}` : "",
+          data.doctorName ? `الطبيب: ${data.doctorName}` : "",
+          data.time ? `الوقت: ${data.time}` : "",
+          data.message,
+        ]
+          .filter(Boolean)
+          .join("\n");
         const { error } = await supabase.from("appointments").insert({
-          first_name: data.firstName,
-          last_name: data.lastName,
+          patient: `${data.firstName} ${data.lastName}`,
           phone: data.phone,
-          email: data.email,
-          notes: data.message,
-          service_id: data.service,
-          doctor_id: data.doctor,
-          scheduled_at: `${data.date}T${data.time}:00`,
+          date: data.date,
+          status: "pending",
+          notes,
         });
         if (error) {
           logger.warn("api/appointment", "supabase insert failed", error);
