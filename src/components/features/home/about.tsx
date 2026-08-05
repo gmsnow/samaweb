@@ -8,7 +8,6 @@ import { Target, Eye, HeartHandshake, Building2 } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { SectionHeading } from "@/components/shared/section-heading";
 import { Reveal } from "@/components/shared/reveal";
-import { img } from "@/data/content";
 import { getExperienceYears } from "@/lib/data/live";
 
 const values = [
@@ -36,7 +35,7 @@ export function About() {
           <Reveal direction="right" className="relative">
             <div className="relative aspect-[4/3] overflow-hidden rounded-3xl shadow-lift">
               <Image
-                src={img("about-center", 900, 700)}
+                src="/images/premium_photo-1663052427377-3f41fde11508.avif"
                 alt={locale === "ar" ? "مركز سما" : "Sama Center facility"}
                 fill
                 sizes="(min-width: 1024px) 50vw, 100vw"
