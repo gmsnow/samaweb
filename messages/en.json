@@ -145,9 +145,10 @@
     "eyebrow": "Testimonials",
     "title": "Stories of",
     "highlight": "Recovery",
-    "description": "Real patients, real results — rated 4.9/5 from 2,300+ reviews.",
-    "ratingLabel": "Google rating",
-    "patients": "patients"
+    "description": "Real patients, real results from our patients and site visitors.",
+    "ratingLabel": "Visitor rating",
+    "reviews": "reviews",
+    "noRatingsYet": "Be the first to rate the site"
   },
   "rating": {
     "title": "How was your experience?",

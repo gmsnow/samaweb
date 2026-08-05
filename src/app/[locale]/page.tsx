@@ -34,7 +34,7 @@ export default async function HomePage({
       <Treatments />
       <Journey />
       <Doctors />
-      <Testimonials initialStats={stats} />
+      <Testimonials />
       <Gallery />
       <Pricing />
       <Faq />

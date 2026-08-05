@@ -14,44 +14,39 @@ import {
 import { Card } from "@/components/ui/card";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { SectionHeading } from "@/components/shared/section-heading";
-import { siteConfig } from "@/config/site";
-import { fetchLiveTestimonials, fetchLiveStats, type LiveTestimonial, type LiveStats } from "@/lib/data/live";
+import {
+  fetchLiveTestimonials,
+  fetchLiveRating,
+  type LiveTestimonial,
+  type LiveRating,
+} from "@/lib/data/live";
 
-export function Testimonials({ initialStats }: { initialStats?: LiveStats | null }) {
+export function Testimonials() {
   const t = useTranslations("testimonials");
   const locale = useLocale();
   const [plugin] = React.useState(() =>
     Autoplay({ delay: 5000, stopOnInteraction: false })
   );
   const [items, setItems] = React.useState<LiveTestimonial[]>([]);
-  const [patientsTreated, setPatientsTreated] = React.useState<number | null>(
-    initialStats ? initialStats.patients + initialStats.sessions : null
-  );
+  const [rating, setRating] = React.useState<LiveRating | null>(null);
 
   React.useEffect(() => {
     let active = true;
     fetchLiveTestimonials().then((list) => {
       if (active) setItems(list);
     });
+    fetchLiveRating().then((r) => {
+      if (active) setRating(r);
+    });
     return () => {
       active = false;
     };
   }, []);
 
-  const patientsLabel = new Intl.NumberFormat(locale === "ar" ? "ar-EG" : "en-US").format(
-    patientsTreated ?? siteConfig.stats.patients
+  const countLabel = new Intl.NumberFormat(locale === "ar" ? "ar-EG" : "en-US").format(
+    rating?.count ?? 0
   );
-
-  React.useEffect(() => {
-    if (initialStats) return;
-    let active = true;
-    fetchLiveStats().then((s) => {
-      if (active && s) setPatientsTreated(s.patients + s.sessions);
-    });
-    return () => {
-      active = false;
-    };
-  }, [initialStats]);
+  const hasRatings = (rating?.count ?? 0) > 0;
 
   return (
     <section id="testimonials" className="relative bg-muted/30 py-24 sm:py-32">
@@ -110,13 +105,22 @@ export function Testimonials({ initialStats }: { initialStats?: LiveStats | null
           <div className="glass-strong flex items-center gap-3 rounded-2xl px-6 py-4 shadow-soft">
             <div className="flex items-center gap-0.5 text-amber-500">
               {Array.from({ length: 5 }).map((_, i) => (
-                <Star key={i} className="h-5 w-5 fill-current" />
+                <Star
+                  key={i}
+                  className={`h-5 w-5 ${
+                    i < Math.round(rating?.average ?? 0) ? "fill-current" : "text-muted-foreground/30"
+                  }`}
+                />
               ))}
             </div>
             <div className="text-start">
-              <p className="text-lg font-bold">4.9 / 5.0</p>
+              <p className="text-lg font-bold">
+                {hasRatings ? `${(rating?.average ?? 0).toFixed(1)} / 5.0` : "—"}
+              </p>
               <p className="text-xs text-muted-foreground">
-                {t("ratingLabel")} · {patientsLabel}+ {t("patients")}
+                {hasRatings
+                  ? `${t("ratingLabel")} · ${countLabel} ${t("reviews")}`
+                  : t("noRatingsYet")}
               </p>
             </div>
           </div>

@@ -236,9 +236,7 @@ export interface LiveInsuranceCompany {
   id: string;
   name: string;
   logoUrl: string | null;
-}
-
-let insuranceCache: { data: LiveInsuranceCompany[]; at: number } | null = null;
+}let insuranceCache: { data: LiveInsuranceCompany[]; at: number } | null = null;
 
 export async function fetchLiveInsuranceCompanies(): Promise<LiveInsuranceCompany[]> {
   if (insuranceCache && Date.now() - insuranceCache.at < CACHE_TTL) return insuranceCache.data;
@@ -310,5 +308,39 @@ export async function fetchLiveDoctors(): Promise<LiveDoctor[]> {
   } catch (err) {
     logger.warn("data/live", "fetch doctors failed", err);
     return [];
+  }
+}
+
+export interface LiveRating {
+  average: number;
+  count: number;
+}
+
+let ratingCache: { data: LiveRating; at: number } | null = null;
+
+export async function fetchLiveRating(): Promise<LiveRating | null> {
+  if (ratingCache && Date.now() - ratingCache.at < CACHE_TTL) return ratingCache.data;
+
+  try {
+    const { data, error } = await supabaseBrowser
+      .from("site_reviews")
+      .select("rating");
+
+    if (error) throw error;
+
+    const rows = (data ?? []) as { rating: unknown }[];
+    if (rows.length === 0) return { average: 0, count: 0 };
+
+    const sum = rows.reduce((acc, row) => acc + Number(row.rating ?? 0), 0);
+    const rating: LiveRating = {
+      average: sum / rows.length,
+      count: rows.length,
+    };
+
+    ratingCache = { data: rating, at: Date.now() };
+    return rating;
+  } catch (err) {
+    logger.warn("data/live", "fetch rating failed", err);
+    return null;
   }
 }
