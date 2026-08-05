@@ -125,14 +125,14 @@ export interface GalleryItem {
 }
 
 export const galleryItems: GalleryItem[] = [
-  { id: "g1", src: img("gym", 800, 1000), title: { en: "Rehab Gym", ar: "صالة التأهيل" }, category: { en: "Facility", ar: "المرافق" }, ratio: "aspect-[4/5]" },
-  { id: "g2", src: img("aqua", 800, 600), title: { en: "Hydrotherapy Pool", ar: "مسبح العلاج المائي" }, category: { en: "Facility", ar: "المرافق" }, ratio: "aspect-[4/3]" },
-  { id: "g3", src: img("therapy1", 800, 800), title: { en: "Manual Therapy", ar: "العلاج اليدوي" }, category: { en: "Treatment", ar: "العلاج" }, ratio: "aspect-square" },
+  { id: "g1", src: "https://images.pexels.com/photos/6111585/pexels-photo-6111585.jpeg?auto=compress&cs=tinysrgb&w=1200", title: { en: "Rehab Gym", ar: "صالة التأهيل" }, category: { en: "Facility", ar: "المرافق" }, ratio: "aspect-[4/5]" },
+  { id: "g2", src: "https://images.pexels.com/photos/7222166/pexels-photo-7222166.jpeg?auto=compress&cs=tinysrgb&w=1200", title: { en: "Hydrotherapy Pool", ar: "مسبح العلاج المائي" }, category: { en: "Facility", ar: "المرافق" }, ratio: "aspect-[4/3]" },
+  { id: "g3", src: "https://images.pexels.com/photos/5793917/pexels-photo-5793917.jpeg?auto=compress&cs=tinysrgb&w=1200", title: { en: "Manual Therapy", ar: "العلاج اليدوي" }, category: { en: "Treatment", ar: "العلاج" }, ratio: "aspect-square" },
   { id: "g4", src: img("tech", 800, 600), title: { en: "Shockwave Lab", ar: "مختبر الموجات الصادمة" }, category: { en: "Technology", ar: "التقنية" }, ratio: "aspect-[4/3]" },
-  { id: "g5", src: img("therapy2", 800, 1000), title: { en: "Rehab Session", ar: "جلسة تأهيل" }, category: { en: "Treatment", ar: "العلاج" }, ratio: "aspect-[4/5]" },
-  { id: "g6", src: img("team", 800, 800), title: { en: "Our Team", ar: "فريقنا" }, category: { en: "Center", ar: "المركز" }, ratio: "aspect-square" },
-  { id: "g7", src: img("lobby", 800, 600), title: { en: "Reception", ar: "الاستقبال" }, category: { en: "Facility", ar: "المرافق" }, ratio: "aspect-[4/3]" },
-  { id: "g8", src: img("recovery", 800, 1000), title: { en: "Recovery Room", ar: "غرفة التعافي" }, category: { en: "Facility", ar: "المرافق" }, ratio: "aspect-[4/5]" },
+  { id: "g5", src: "https://images.pexels.com/photos/5793792/pexels-photo-5793792.jpeg?auto=compress&cs=tinysrgb&w=1200", title: { en: "Rehab Session", ar: "جلسة تأهيل" }, category: { en: "Treatment", ar: "العلاج" }, ratio: "aspect-[4/5]" },
+  { id: "g6", src: "https://images.pexels.com/photos/14797757/pexels-photo-14797757.jpeg?auto=compress&cs=tinysrgb&w=1200", title: { en: "Our Team", ar: "فريقنا" }, category: { en: "Center", ar: "المركز" }, ratio: "aspect-square" },
+  { id: "g7", src: "https://images.pexels.com/photos/5619462/pexels-photo-5619462.jpeg?auto=compress&cs=tinysrgb&w=1200", title: { en: "Reception", ar: "الاستقبال" }, category: { en: "Facility", ar: "المرافق" }, ratio: "aspect-[4/3]" },
+  { id: "g8", src: "https://images.pexels.com/photos/5793685/pexels-photo-5793685.jpeg?auto=compress&cs=tinysrgb&w=1200", title: { en: "Recovery Room", ar: "غرفة التعافي" }, category: { en: "Facility", ar: "المرافق" }, ratio: "aspect-[4/5]" },
   { id: "g9", src: img("electro", 800, 600), title: { en: "Electrical Stimulation", ar: "التنبيه الكهربائي" }, category: { en: "Modality", ar: "أنماط العلاج" }, ratio: "aspect-[4/3]", description: { en: "Activates muscle cells through controlled contractions, restoring function in affected limbs.", ar: "يستخدم لتنشيط خلايا عضلات الجسم عبر توليد تقلص عضلي وإنتاج وظائف في الأطراف المصابة" } },
   { id: "g10", src: img("interferential", 800, 600), title: { en: "Interferential Current", ar: "التيار المتداخل" }, category: { en: "Modality", ar: "أنماط العلاج" }, ratio: "aspect-[4/3]", description: { en: "Relieves pain while reducing muscle fatigue and spasms.", ar: "يعمل على تقليل الألم وتقليل إجهاد العضلات والتشنجات العضلية" } },
   { id: "g11", src: img("tens", 800, 600), title: { en: "Transcutaneous Electrical Nerve Stimulation (TENS)", ar: "التحفيز العصبي الكهربائي عبر الجلد" }, category: { en: "Modality", ar: "أنماط العلاج" }, ratio: "aspect-[4/3]", description: { en: "Eases pain and stimulates sensory fibers.", ar: "يعمل على تخفيف الألم وتحفيز الألياف الحسية" } },
