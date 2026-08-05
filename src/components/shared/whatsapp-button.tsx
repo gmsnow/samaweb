@@ -6,7 +6,7 @@ import { MessageCircle } from "lucide-react";
 import { siteConfig } from "@/config/site";
 
 export function WhatsAppButton() {
-  const href = `https://wa.me/${siteConfig.whatsapp}?text=${encodeURIComponent("Hello Sama Center, I would like to book an appointment.")}`;
+  const href = `https://wa.me/${siteConfig.whatsapp}?text=${encodeURIComponent("مرحباً مركز سما، أرغب في حجز موعد.")}`;
 
   return (
     <motion.a
