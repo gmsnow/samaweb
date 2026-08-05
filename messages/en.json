@@ -217,7 +217,7 @@
       "eyebrow": "Interactive 3D Model",
       "title": "Ankle & Foot",
       "highlight": "Nerves, Arteries & Ligaments",
-      "description": "A detailed interactive model of the nerves, arteries, and ligaments of the ankle and foot, powered by BioDigital and the MSD Manual. Use the sidebar to search and explore structures.",
+      "description": "An interactive 3D model of the bones and ligaments of the ankle and foot, embedded from Sketchfab. Use the sidebar to search and explore the key structures.",
       "searchPlaceholder": "Search structures…",
       "structures": "Structures",
       "noResults": "No structures found",
@@ -226,6 +226,7 @@
       "exitFullscreen": "Exit fullscreen",
       "togglePanel": "Toggle structures panel",
       "hint": "Select a structure from the sidebar to learn more",
+      "attribution": "Model: Foot, Ankle and Ligaments by Soma3D (soma3D.com) via Sketchfab",
       "categories": {
         "nerves": "Nerves",
         "arteries": "Arteries",

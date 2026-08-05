@@ -25,8 +25,8 @@ import {
   getAnkleFootInfo,
 } from "./ankle-foot-data";
 
-const BIO_DIGITAL_WIDGET_URL =
-  "https://human.biodigital.com/widget/?be=2bsT&background.colors=0.008,0.024,0.09,1,0.008,0.024,0.09,1&initial.hand-hint=false&ui-info=false&ui-search=false&ui-filter=false&ui-tools=false&ui-center=false&ui-dissect=false&ui-zoom=false&ui-fullscreen=false&ui-help=false";
+const SKETCHFAB_EMBED_URL =
+  "https://sketchfab.com/models/2e2d0f64ecb743c8844304ff5cf693cf/embed?autostart=1&preload=1&ui_controls=1&ui_infos=0&ui_watermark=0&ui_help=0&ui_theme=dark&ui_related=0&ui_search=0&ui_zoom=1&ui_fullscreen=0&ui_vr=0&ui_ar=0&ui_animations=0&ui_settings=0&ui_inspector=0&ui_annotations=1&ui_stop=0";
 
 export function AnkleFootModel() {
   const t = useTranslations("anatomy.ankleFoot");
@@ -104,8 +104,8 @@ export function AnkleFootModel() {
     >
       <iframe
         key={reloadKey}
-        src={BIO_DIGITAL_WIDGET_URL}
-        title="Nerves, Arteries, and Ligaments of the Ankle and Foot"
+        src={SKETCHFAB_EMBED_URL}
+        title="Foot, Ankle and Ligaments by Soma3D"
         loading="lazy"
         className="h-full w-full border-0"
       />
@@ -159,7 +159,8 @@ export function AnkleFootModel() {
       </div>
 
       <div className="pointer-events-none absolute inset-x-0 bottom-0 z-[5] bg-gradient-to-t from-slate-950/90 via-slate-950/40 to-transparent p-4 pt-16">
-        <p className="text-center text-xs text-white/40">{t("hint")}</p>
+        <p className="text-center text-xs text-white/40">{t("attribution")}</p>
+        <p className="mt-1 text-center text-xs text-white/60">{t("hint")}</p>
       </div>
     </div>
   );
