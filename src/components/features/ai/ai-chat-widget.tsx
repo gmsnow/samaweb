@@ -3,12 +3,13 @@
 import * as React from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "sonner";
+import { useLocale, useTranslations } from "next-intl";
 import { Bot, Mic, Send, Sparkles, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 type Message = { role: "user" | "assistant"; content: string };
 
-function useSpeechRecognition(onResult: (text: string) => void) {
+function useSpeechRecognition(onResult: (text: string) => void, locale: string) {
   const [listening, setListening] = React.useState(false);
   const recRef = React.useRef<{
     start: () => void;
@@ -36,7 +37,7 @@ function useSpeechRecognition(onResult: (text: string) => void) {
     };
     if (!Ctor) return;
     const rec = new Ctor();
-    rec.lang = "en-US";
+    rec.lang = locale === "ar" ? "ar-SA" : "en-US";
     rec.onresult = (e: unknown) => {
       const results = (e as { results: ArrayLike<ArrayLike<{ transcript: string }>> }).results;
       const text = Array.from(results)
@@ -51,12 +52,12 @@ function useSpeechRecognition(onResult: (text: string) => void) {
       rec.onend = null;
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [locale]);
 
-  const toggle = () => {
+  const toggle = (voiceError: string) => {
     const rec = recRef.current;
     if (!rec) {
-      toast.error("Voice input is not supported in this browser.");
+      toast.error(voiceError);
       return;
     }
     if (listening) {
@@ -72,20 +73,18 @@ function useSpeechRecognition(onResult: (text: string) => void) {
 }
 
 export function AiChatWidget() {
+  const locale = useLocale();
+  const t = useTranslations("ai");
   const [open, setOpen] = React.useState(false);
   const [messages, setMessages] = React.useState<Message[]>([
-    {
-      role: "assistant",
-      content:
-        "Hi! I'm Sama Assistant. I can help you book an appointment, learn about our services, or answer recovery questions. How can I help?",
-    },
+    { role: "assistant", content: t("greeting") },
   ]);
   const [input, setInput] = React.useState("");
   const [loading, setLoading] = React.useState(false);
   const scrollRef = React.useRef<HTMLDivElement>(null);
 
   const onSpeech = React.useCallback((text: string) => setInput(text), []);
-  const { toggle, listening, supported } = useSpeechRecognition(onSpeech);
+  const { toggle, listening, supported } = useSpeechRecognition(onSpeech, locale);
 
   React.useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
@@ -102,15 +101,12 @@ export function AiChatWidget() {
       const res = await fetch("/api/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ messages: next }),
+        body: JSON.stringify({ messages: next, locale }),
       });
       const data = (await res.json()) as { reply: string };
       setMessages((m) => [...m, { role: "assistant", content: data.reply }]);
     } catch {
-      setMessages((m) => [
-        ...m,
-        { role: "assistant", content: "Sorry, I couldn't reach the assistant. Please try again." },
-      ]);
+      setMessages((m) => [...m, { role: "assistant", content: t("error") }]);
     } finally {
       setLoading(false);
     }
@@ -120,7 +116,7 @@ export function AiChatWidget() {
     <>
       <motion.button
         type="button"
-        aria-label="Open AI assistant"
+        aria-label={t("open")}
         initial={{ opacity: 0, scale: 0 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ delay: 1.2, type: "spring", stiffness: 200 }}
@@ -155,10 +151,10 @@ export function AiChatWidget() {
               </span>
               <div>
                 <p className="flex items-center gap-1.5 font-semibold">
-                  Sama Assistant
+                  {locale === "ar" ? "مساعد سما" : "Sama Assistant"}
                   <Sparkles className="h-3.5 w-3.5" />
                 </p>
-                <p className="text-xs text-white/70">AI-powered • replies instantly</p>
+                <p className="text-xs text-white/70">{t("subtitle")}</p>
               </div>
             </div>
 
@@ -200,8 +196,8 @@ export function AiChatWidget() {
               {supported && (
                 <button
                   type="button"
-                  onClick={toggle}
-                  aria-label="Voice input"
+                  onClick={() => toggle(t("voiceUnsupported"))}
+                  aria-label={t("voice")}
                   className={cn(
                     "flex h-10 w-10 shrink-0 items-center justify-center rounded-xl transition-colors",
                     listening
@@ -215,13 +211,13 @@ export function AiChatWidget() {
               <input
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
-                placeholder="Ask about services, bookings…"
+                placeholder={t("placeholder")}
                 className="h-10 flex-1 rounded-xl border border-border/50 bg-background/60 px-3 text-sm outline-none focus:border-primary"
               />
               <button
                 type="submit"
                 disabled={!input.trim() || loading}
-                aria-label="Send"
+                aria-label={t("send")}
                 className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary text-white transition-opacity disabled:opacity-40"
               >
                 <Send className="h-4 w-4" />

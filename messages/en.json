@@ -421,5 +421,15 @@
     "enableDemo": "Enable demo admin",
     "missingConfig": "Storage is not configured yet. Set SUPABASE_SERVICE_ROLE_KEY.",
     "error": "Something went wrong. Please try again."
+  },
+  "ai": {
+    "greeting": "Hi! I'm Sama Assistant. I can help you book an appointment, learn about our services, or answer recovery questions. How can I help?",
+    "subtitle": "AI-powered • replies instantly",
+    "placeholder": "Ask about services, bookings…",
+    "voiceUnsupported": "Voice input is not supported in this browser.",
+    "error": "Sorry, I couldn't reach the assistant. Please try again.",
+    "open": "Open AI assistant",
+    "send": "Send",
+    "voice": "Voice input"
   }
 }
