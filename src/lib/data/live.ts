@@ -134,6 +134,47 @@ export async function fetchLivePackages(): Promise<LivePackage[]> {
   }
 }
 
+export interface LiveTestimonial {
+  id: string;
+  patientName: string;
+  rating: number;
+  textEn: string;
+  textAr: string | null;
+  treatment: string | null;
+  photoUrl: string | null;
+}
+
+let testimonialsCache: { data: LiveTestimonial[]; at: number } | null = null;
+
+export async function fetchLiveTestimonials(): Promise<LiveTestimonial[]> {
+  if (testimonialsCache && Date.now() - testimonialsCache.at < CACHE_TTL) return testimonialsCache.data;
+
+  try {
+    const { data, error } = await supabaseBrowser
+      .from("testimonials")
+      .select("id, patient_name, rating, text_en, text_ar, treatment, photo_url")
+      .order("created_at", { ascending: false });
+
+    if (error) throw error;
+
+    const list: LiveTestimonial[] = (data ?? []).map((row) => ({
+      id: String(row.id),
+      patientName: String(row.patient_name ?? ""),
+      rating: Number(row.rating ?? 5),
+      textEn: String(row.text_en ?? ""),
+      textAr: row.text_ar ? String(row.text_ar) : null,
+      treatment: row.treatment ? String(row.treatment) : null,
+      photoUrl: row.photo_url ? String(row.photo_url) : null,
+    }));
+
+    testimonialsCache = { data: list, at: Date.now() };
+    return list;
+  } catch (err) {
+    logger.warn("data/live", "fetch testimonials failed", err);
+    return [];
+  }
+}
+
 export function formatPrice(price: number, locale: string): string {
   return new Intl.NumberFormat(locale === "ar" ? "ar-SA" : "en-US", {
     maximumFractionDigits: 0,
