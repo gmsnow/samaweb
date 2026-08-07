@@ -328,7 +328,7 @@ export async function fetchLiveEmployees(): Promise<LiveEmployee[]> {
       .from("employees")
       .select("id, name, department")
       .eq("department", "علاج طبيعي")
-      .eq("is_active", true)
+      .eq("isActive", true)
       .is("deleted_at", null)
       .order("name", { ascending: true });
 
