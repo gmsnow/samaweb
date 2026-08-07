@@ -132,7 +132,6 @@ export function BookingForm() {
     } catch (err) {
       logger.error("booking", "Appointment submit failed", err);
       toast.error(t("error") ?? "Something went wrong. Please try again.");
-      setDone(true);
     } finally {
       setSubmitting(false);
     }

@@ -38,7 +38,6 @@ export async function POST(request: Request) {
         const { createClient } = await import("@/lib/supabase/server");
         const supabase = await createClient();
         const notes = [
-          data.serviceName ? `الخدمة: ${data.serviceName}` : "",
           data.doctorName ? `الطبيب: ${data.doctorName}` : "",
           data.time ? `الوقت: ${data.time}` : "",
           data.message,
@@ -48,12 +47,14 @@ export async function POST(request: Request) {
         const { error } = await supabase.from("appointments").insert({
           patient: `${data.firstName} ${data.lastName}`,
           phone: data.phone,
+          therapist: data.doctorName || null,
           date: data.date,
           status: "pending",
           notes,
         });
         if (error) {
           logger.warn("api/appointment", "supabase insert failed", error);
+          return NextResponse.json({ error: "Failed to save appointment" }, { status: 500 });
         }
       } catch (error) {
         logger.warn("api/appointment", "supabase unavailable", error);
