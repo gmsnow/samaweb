@@ -340,7 +340,14 @@
     "followUs": "Follow Us",
     "mapTitle": "Our Location on the Map",
     "successTitle": "Message Sent",
-    "successText": "Thank you for reaching out. We will get back to you shortly."
+    "successText": "Thank you for reaching out. We will get back to you shortly.",
+    "checkReplyTitle": "Check Your Reply",
+    "checkReplyText": "Enter your phone number to see our reply to your message.",
+    "phonePlaceholder": "Phone Number",
+    "checkReplyBtn": "Check",
+    "noReplies": "No replies yet for this number.",
+    "ourReply": "Our Reply",
+    "replyChecked": "Checked"
   },
   "newsletter": {
     "title": "Stay Healthy with Us",

@@ -340,7 +340,14 @@
     "followUs": "تابعنا",
     "mapTitle": "موقعنا على الخريطة",
     "successTitle": "تم إرسال الرسالة",
-    "successText": "شكراً لتواصلك معنا. سنعود إليك قريباً."
+    "successText": "شكراً لتواصلك معنا. سنعود إليك قريباً.",
+    "checkReplyTitle": "تحقق من الرد على رسالتك",
+    "checkReplyText": "أدخل رقم هاتفك للاطلاع على ردنا على رسالتك.",
+    "phonePlaceholder": "رقم الهاتف",
+    "checkReplyBtn": "تحقق",
+    "noReplies": "لا توجد ردود بعد على هذا الرقم.",
+    "ourReply": "ردنا",
+    "replyChecked": "تم التحقق"
   },
   "newsletter": {
     "title": "ابقَ بصحة معنا",
