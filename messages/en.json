@@ -245,6 +245,25 @@
         "arteries": "Arteries",
         "ligaments": "Ligaments"
       }
+    },
+    "fullBody": {
+      "eyebrow": "Interactive 3D Model",
+      "title": "Full Body",
+      "highlight": "Human Skeleton",
+      "description": "An interactive 3D model of the full human skeleton, rendered locally for fast loading. Click any bone in the 3D view or search the sidebar to learn about its role and clinical significance.",
+      "searchPlaceholder": "Search bones…",
+      "structures": "Bones",
+      "noResults": "No bones found",
+      "reset": "Reset view",
+      "fullscreen": "Fullscreen",
+      "exitFullscreen": "Exit fullscreen",
+      "togglePanel": "Toggle bones panel",
+      "hint": "Click any bone in the 3D view or search the sidebar to learn more",
+      "attribution": "Model: Z-Anatomy / BodyParts3D (DBERI, CC BY-SA)",
+      "noDescription": "No description available for this bone.",
+      "categories": {
+        "bones": "Bones"
+      }
     }
   },
   "pricing": {

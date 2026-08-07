@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { setRequestLocale } from "next-intl/server";
 import { getTranslations } from "next-intl/server";
 import { LazySpineViewer } from "@/components/spine/lazy-spine-viewer";
+import { LazyFullBodyViewer } from "@/components/spine/lazy-full-body-viewer";
 import { AnkleFootModel } from "@/components/spine/ankle-foot-model";
 import { SectionHeading } from "@/components/shared/section-heading";
 
@@ -48,6 +49,16 @@ export default async function AnatomyPage({
             description={t("ankleFoot.description")}
           />
           <AnkleFootModel />
+        </div>
+
+        <div className="mt-24">
+          <SectionHeading
+            eyebrow={t("fullBody.eyebrow")}
+            title={t("fullBody.title")}
+            highlight={t("fullBody.highlight")}
+            description={t("fullBody.description")}
+          />
+          <LazyFullBodyViewer />
         </div>
       </div>
     </div>
