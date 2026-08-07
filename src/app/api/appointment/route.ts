@@ -38,7 +38,6 @@ export async function POST(request: Request) {
         const { createClient } = await import("@/lib/supabase/server");
         const supabase = await createClient();
         const notes = [
-          data.doctorName ? `الطبيب: ${data.doctorName}` : "",
           data.time ? `الوقت: ${data.time}` : "",
           data.message,
         ]
