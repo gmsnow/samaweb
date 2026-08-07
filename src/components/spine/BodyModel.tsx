@@ -5,14 +5,23 @@ import { useFrame } from "@react-three/fiber";
 import { useGLTF, Html } from "@react-three/drei";
 import type { GLTF } from "three-stdlib";
 import * as THREE from "three";
+import {
+  BODY_CATEGORY_COLORS,
+  categoryForType,
+  regionForStructure,
+  type BodyCategory,
+  type BodyRegion,
+} from "./body-regions";
 
 useGLTF.preload("/body.glb", "/draco/");
 
-export interface BodyBone {
+export interface BodyStructure {
   id: string;
   name: string;
   description: string;
   wikiLink?: string;
+  category: BodyCategory;
+  region: BodyRegion | "other";
 }
 
 export interface BodyModelApi {
@@ -23,17 +32,19 @@ interface BodyModelProps {
   selected: string | null;
   listHovered: string | null;
   onSelect: (key: string | null, worldPos?: THREE.Vector3) => void;
-  onBones: (bones: BodyBone[]) => void;
+  onStructures: (structures: BodyStructure[]) => void;
+  visibleCategories: Set<BodyCategory>;
+  activeRegion: BodyRegion | null;
   apiRef?: React.MutableRefObject<BodyModelApi | null>;
 }
 
-const BONE_COLOR = "#FFEDB1";
-const HIGHLIGHT_COLOR = "#f59e0b";
 const TARGET_HEIGHT = 3;
 
 interface MeshState {
   key: string;
   mesh: THREE.Mesh;
+  category: BodyCategory;
+  region: BodyRegion | "other";
   originalEmissive: THREE.Color;
 }
 
@@ -52,7 +63,9 @@ export function BodyModel({
   selected,
   listHovered,
   onSelect,
-  onBones,
+  onStructures,
+  visibleCategories,
+  activeRegion,
   apiRef,
 }: BodyModelProps) {
   const { scene } = useGLTF("/body.glb", "/draco/") as GLTF;
@@ -69,9 +82,15 @@ export function BodyModel({
     selectables.current.clear();
     meshToKey.current.clear();
 
-    const boneInfo = new Map<
+    const structureInfo = new Map<
       string,
-      { name: string; description: string; wikiLink?: string }
+      {
+        name: string;
+        description: string;
+        wikiLink?: string;
+        category: BodyCategory;
+        region: BodyRegion | "other";
+      }
     >();
 
     scene.traverse((child) => {
@@ -86,37 +105,43 @@ export function BodyModel({
         wikiLink?: string;
       };
 
-      if (ud.type !== "bone") {
-        mesh.visible = false;
-        return;
-      }
+      const name = (ud.name || mesh.name).trim() || mesh.name;
+      const category = categoryForType(ud.type);
+      const region = regionForStructure(name);
 
       mesh.visible = true;
-      const key = (ud.name || mesh.name).trim() || mesh.name;
 
       const mat = mesh.material as THREE.MeshStandardMaterial;
       const cloned = mat.clone();
-      cloned.color.set(BONE_COLOR);
+      cloned.color.set(BODY_CATEGORY_COLORS[category]);
       mesh.material = cloned;
 
-      meshToKey.current.set(mesh, key);
-      const list = selectables.current.get(key) ?? [];
-      list.push({ key, mesh, originalEmissive: cloned.emissive.clone() });
-      selectables.current.set(key, list);
+      meshToKey.current.set(mesh, name);
+      const list = selectables.current.get(name) ?? [];
+      list.push({
+        key: name,
+        mesh,
+        category,
+        region,
+        originalEmissive: cloned.emissive.clone(),
+      });
+      selectables.current.set(name, list);
 
-      if (!boneInfo.has(key)) {
-        boneInfo.set(key, {
-          name: key,
+      if (!structureInfo.has(name)) {
+        structureInfo.set(name, {
+          name,
           description: ud.description ?? "",
           wikiLink: ud.wikiLink,
+          category,
+          region,
         });
       }
     });
 
-    const bones: BodyBone[] = Array.from(boneInfo.entries())
+    const structures: BodyStructure[] = Array.from(structureInfo.entries())
       .map(([id, v]) => ({ id, ...v }))
       .sort((a, b) => a.name.localeCompare(b.name));
-    onBones(bones);
+    onStructures(structures);
 
     const transform = transformRef.current;
     if (transform) {
@@ -145,21 +170,34 @@ export function BodyModel({
     return () => {
       if (apiRef) apiRef.current = null;
     };
-  }, [scene, apiRef, onBones]);
+  }, [scene, apiRef, onStructures]);
+
+  useEffect(() => {
+    selectables.current.forEach((meshes) => {
+      const st = meshes[0];
+      const included =
+        visibleCategories.has(st.category) &&
+        (activeRegion === null || st.region === activeRegion);
+      for (const m of meshes) m.mesh.visible = included;
+    });
+  }, [visibleCategories, activeRegion]);
 
   useFrame((state) => {
     const t = state.clock.elapsedTime;
     const highlight = hovered ?? listHovered;
 
     selectables.current.forEach((meshes, key) => {
+      const st0 = meshes[0];
+      const color = BODY_CATEGORY_COLORS[st0.category];
       for (const st of meshes) {
+        if (!st.mesh.visible) continue;
         const mat = st.mesh.material as THREE.MeshStandardMaterial;
         if (key === selected) {
           const pulse = 0.35 + Math.sin(t * 3) * 0.18;
-          mat.emissive.set(HIGHLIGHT_COLOR);
+          mat.emissive.set(color);
           mat.emissiveIntensity = pulse;
         } else if (key === highlight) {
-          mat.emissive.set(HIGHLIGHT_COLOR);
+          mat.emissive.set(color);
           mat.emissiveIntensity = 0.28;
         } else {
           mat.emissive.copy(st.originalEmissive);
@@ -177,6 +215,11 @@ export function BodyModel({
     }
   }, [selected]);
 
+  const isVisibleKey = useCallback((key: string) => {
+    const meshes = selectables.current.get(key);
+    return !!meshes && meshes.some((s) => s.mesh.visible);
+  }, []);
+
   const findKeyFromEvent = useCallback(
     (e: {
       object: THREE.Object3D;
@@ -189,11 +232,11 @@ export function BodyModel({
       for (const hit of hits) {
         if (!(hit.object instanceof THREE.Mesh)) continue;
         const key = meshToKey.current.get(hit.object as THREE.Mesh);
-        if (key) return key;
+        if (key && isVisibleKey(key)) return key;
       }
       return null;
     },
-    []
+    [isVisibleKey]
   );
 
   const handlePointerOver = useCallback(

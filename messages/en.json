@@ -249,20 +249,33 @@
     "fullBody": {
       "eyebrow": "Interactive 3D Model",
       "title": "Full Body",
-      "highlight": "Human Skeleton",
-      "description": "An interactive 3D model of the full human skeleton, rendered locally for fast loading. Click any bone in the 3D view or search the sidebar to learn about its role and clinical significance.",
-      "searchPlaceholder": "Search bones…",
-      "structures": "Bones",
-      "noResults": "No bones found",
+      "highlight": "Bones, Muscles & Connective Tissues",
+      "description": "An interactive 3D model of the whole human body, rendered locally for fast loading. Toggle the bone, muscle and connective-tissue layers or isolate a single body part — chest, head, limbs and more — then click any structure to learn about its role.",
+      "searchPlaceholder": "Search structures…",
+      "structures": "Structures",
+      "noResults": "No structures found",
       "reset": "Reset view",
       "fullscreen": "Fullscreen",
       "exitFullscreen": "Exit fullscreen",
-      "togglePanel": "Toggle bones panel",
-      "hint": "Click any bone in the 3D view or search the sidebar to learn more",
+      "togglePanel": "Toggle structures panel",
+      "hint": "Click any bone, muscle or bursa in the 3D view to learn more",
       "attribution": "Model: Z-Anatomy / BodyParts3D (DBERI, CC BY-SA)",
-      "noDescription": "No description available for this bone.",
+      "noDescription": "No description available for this structure.",
+      "allCategories": "All",
       "categories": {
-        "bones": "Bones"
+        "bones": "Bones",
+        "muscles": "Muscles",
+        "connective": "Bursae & Tendons"
+      },
+      "regions": {
+        "all": "Whole Body",
+        "head": "Head",
+        "neck": "Neck",
+        "chest": "Chest",
+        "abdomen": "Abdomen & Pelvis",
+        "back": "Spine & Back",
+        "upperLimb": "Upper Limb",
+        "lowerLimb": "Lower Limb"
       }
     }
   },

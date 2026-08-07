@@ -23,15 +23,21 @@ import * as THREE from "three";
 import { Lights } from "./Lights";
 import {
   BodyModel,
-  type BodyBone,
+  type BodyStructure,
   type BodyModelApi,
 } from "./BodyModel";
 import { BodyControls } from "./BodyControls";
 import { StructureList, type StructureListItem } from "./StructureList";
 import { InfoPanel, type StructureInfo } from "./InfoPanel";
 import { ToolButton } from "./tool-button";
+import {
+  BODY_CATEGORY_COLORS,
+  BODY_CATEGORY_ORDER,
+  BODY_REGION_KEYS,
+  type BodyCategory,
+  type BodyRegion,
+} from "./body-regions";
 
-export const BODY_BONE_COLOR = "#FFEDB1";
 const BODY_SHADOW_Y = -1.5;
 
 function LoadingFallback() {
@@ -60,7 +66,11 @@ export function FullBodyViewer() {
   const [selected, setSelected] = useState<string | null>(null);
   const [focusPos, setFocusPos] = useState<THREE.Vector3 | null>(null);
   const [listHovered, setListHovered] = useState<string | null>(null);
-  const [bones, setBones] = useState<BodyBone[]>([]);
+  const [structures, setStructures] = useState<BodyStructure[]>([]);
+  const [visibleCategories, setVisibleCategories] = useState<Set<BodyCategory>>(
+    () => new Set(BODY_CATEGORY_ORDER)
+  );
+  const [activeRegion, setActiveRegion] = useState<BodyRegion | null>(null);
   const [query, setQuery] = useState("");
   const [panelOpen, setPanelOpen] = useState(true);
   const [isFullscreen, setIsFullscreen] = useState(false);
@@ -75,8 +85,8 @@ export function FullBodyViewer() {
       document.removeEventListener("fullscreenchange", onFullscreenChange);
   }, []);
 
-  const handleBones = useCallback((list: BodyBone[]) => {
-    setBones(list);
+  const handleStructures = useCallback((list: BodyStructure[]) => {
+    setStructures(list);
   }, []);
 
   const handleSelect = useCallback(
@@ -96,6 +106,48 @@ export function FullBodyViewer() {
     []
   );
 
+  const deselectIfHidden = useCallback(
+    (cats: Set<BodyCategory>, region: BodyRegion | null) => {
+      if (!selected) return;
+      const s = structures.find((st) => st.id === selected);
+      if (!s) return;
+      if (!cats.has(s.category) || (region !== null && s.region !== region)) {
+        setSelected(null);
+        setFocusPos(null);
+      }
+    },
+    [selected, structures]
+  );
+
+  const toggleCategory = useCallback(
+    (category: BodyCategory) => {
+      const next = new Set(visibleCategories);
+      if (next.has(category)) {
+        next.delete(category);
+      } else {
+        next.add(category);
+      }
+      setVisibleCategories(next);
+      deselectIfHidden(next, activeRegion);
+    },
+    [visibleCategories, activeRegion, deselectIfHidden]
+  );
+
+  const showAllCategories = useCallback(() => {
+    const next = new Set(BODY_CATEGORY_ORDER);
+    setVisibleCategories(next);
+    deselectIfHidden(next, activeRegion);
+  }, [activeRegion, deselectIfHidden]);
+
+  const selectRegion = useCallback(
+    (region: BodyRegion | null) => {
+      const next = activeRegion === region ? null : region;
+      setActiveRegion(next);
+      deselectIfHidden(visibleCategories, next);
+    },
+    [activeRegion, visibleCategories, deselectIfHidden]
+  );
+
   const handleReset = useCallback(() => {
     setSelected(null);
     setFocusPos(null);
@@ -110,34 +162,48 @@ export function FullBodyViewer() {
     }
   }, []);
 
+  const filteredStructures = useMemo(
+    () =>
+      structures.filter(
+        (s) =>
+          visibleCategories.has(s.category) &&
+          (activeRegion === null || s.region === activeRegion)
+      ),
+    [structures, visibleCategories, activeRegion]
+  );
+
   const items = useMemo<StructureListItem[]>(
     () =>
-      bones.map((b) => ({
-        key: b.id,
-        label: initials(b.name),
-        fullName: b.name,
-        category: "bones",
-        color: BODY_BONE_COLOR,
+      filteredStructures.map((s) => ({
+        key: s.id,
+        label: initials(s.name),
+        fullName: s.name,
+        category: s.category,
+        color: BODY_CATEGORY_COLORS[s.category],
       })),
-    [bones]
+    [filteredStructures]
   );
 
   const categories = useMemo(
-    () => [{ key: "bones", label: t("categories.bones") }],
-    [t]
+    () =>
+      BODY_CATEGORY_ORDER.filter((c) => visibleCategories.has(c)).map((c) => ({
+        key: c,
+        label: t(`categories.${c}`),
+      })),
+    [visibleCategories, t]
   );
 
   const info = useMemo<StructureInfo | null>(() => {
     if (!selected) return null;
-    const bone = bones.find((b) => b.id === selected);
-    if (!bone) return null;
+    const s = filteredStructures.find((st) => st.id === selected);
+    if (!s) return null;
     return {
-      category: t("categories.bones"),
-      categoryColor: BODY_BONE_COLOR,
-      fullName: bone.name,
-      description: bone.description || t("noDescription"),
+      category: t(`categories.${s.category}`),
+      categoryColor: BODY_CATEGORY_COLORS[s.category],
+      fullName: s.name,
+      description: s.description || t("noDescription"),
     };
-  }, [selected, bones, t]);
+  }, [selected, filteredStructures, t]);
 
   return (
     <div
@@ -162,7 +228,9 @@ export function FullBodyViewer() {
             selected={selected}
             listHovered={listHovered}
             onSelect={handleSelect}
-            onBones={handleBones}
+            onStructures={handleStructures}
+            visibleCategories={visibleCategories}
+            activeRegion={activeRegion}
             apiRef={sceneApi}
           />
           <BodyControls focusPos={focusPos} resetSignal={resetSignal} />
@@ -187,8 +255,48 @@ export function FullBodyViewer() {
         </Canvas>
       </Suspense>
 
+      <div className="pointer-events-none absolute inset-x-0 top-3 z-10 flex flex-col items-center gap-1.5 px-16 sm:top-4">
+        <div className="pointer-events-auto flex max-w-full flex-wrap justify-center gap-1.5">
+          <FilterChip
+            active={visibleCategories.size === BODY_CATEGORY_ORDER.length}
+            onClick={showAllCategories}
+          >
+            {t("allCategories")}
+          </FilterChip>
+          {BODY_CATEGORY_ORDER.map((c) => {
+            const active = visibleCategories.has(c);
+            return (
+              <FilterChip key={c} active={active} onClick={() => toggleCategory(c)}>
+                <span
+                  className="h-2 w-2 rounded-full"
+                  style={{
+                    backgroundColor: BODY_CATEGORY_COLORS[c],
+                    opacity: active ? 1 : 0.4,
+                  }}
+                />
+                {t(`categories.${c}`)}
+              </FilterChip>
+            );
+          })}
+        </div>
+        <div className="pointer-events-auto flex max-w-full flex-wrap justify-center gap-1.5">
+          <FilterChip active={activeRegion === null} onClick={() => selectRegion(null)}>
+            {t("regions.all")}
+          </FilterChip>
+          {BODY_REGION_KEYS.map((r) => (
+            <FilterChip
+              key={r}
+              active={activeRegion === r}
+              onClick={() => selectRegion(r)}
+            >
+              {t(`regions.${r}`)}
+            </FilterChip>
+          ))}
+        </div>
+      </div>
+
       {panelOpen && (
-        <div className="absolute inset-y-3 start-3 z-10 flex w-60 sm:start-4 sm:w-72">
+        <div className="absolute inset-y-16 start-3 z-10 flex w-60 sm:start-4 sm:w-72">
           <StructureList
             items={items}
             categories={categories}
@@ -209,7 +317,7 @@ export function FullBodyViewer() {
         <InfoPanel info={info} onClose={() => handleSelect(null)} />
       </div>
 
-      <div className="absolute end-3 top-3 z-10 flex flex-col gap-2 sm:end-4 sm:top-4">
+      <div className="absolute end-3 top-16 z-10 flex flex-col gap-2 sm:end-4 sm:top-[4.5rem]">
         <ToolButton
           title={t("togglePanel")}
           onClick={() => setPanelOpen((o) => !o)}
@@ -240,5 +348,29 @@ export function FullBodyViewer() {
         <p className="mt-1 text-center text-xs text-white/60">{t("hint")}</p>
       </div>
     </div>
+  );
+}
+
+function FilterChip({
+  active,
+  onClick,
+  children,
+}: {
+  active: boolean;
+  onClick: () => void;
+  children: React.ReactNode;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={`flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-semibold shadow-lg backdrop-blur-xl transition-colors ${
+        active
+          ? "border-primary/50 bg-primary/20 text-white"
+          : "border-white/10 bg-slate-900/80 text-white/55 hover:bg-white/10 hover:text-white/90"
+      }`}
+    >
+      {children}
+    </button>
   );
 }
