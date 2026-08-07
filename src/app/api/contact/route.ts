@@ -4,7 +4,8 @@ import { logger } from "@/lib/logger";
 
 const contactSchema = z.object({
   name: z.string().min(2).max(100),
-  email: z.string().email(),
+  phone: z.string().min(8).max(30).optional().default(""),
+  email: z.string().email().optional().default(""),
   subject: z.string().min(2).max(160),
   message: z.string().min(10).max(4000),
 });
@@ -20,7 +21,7 @@ export async function POST(request: Request) {
       );
     }
 
-    logger.info("api/contact", "incoming message", parsed.data.email);
+    logger.info("api/contact", "incoming message", parsed.data.phone);
 
     if (
       process.env.NEXT_PUBLIC_SUPABASE_URL &&

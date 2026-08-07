@@ -19,7 +19,7 @@ import { logger } from "@/lib/logger";
 
 const contactSchema = z.object({
   name: z.string().min(2),
-  email: z.string().email(),
+  phone: z.string().min(8),
   subject: z.string().min(2),
   message: z.string().min(10),
 });
@@ -47,7 +47,7 @@ export function Contact() {
         body: JSON.stringify(values),
       });
       if (!res.ok) throw new Error(`contact submit failed: ${res.status}`);
-      logger.info("contact", "message sent", values.email);
+      logger.info("contact", "message sent", values.phone);
       toast.success(t("successTitle"), { description: t("successText") });
       reset();
     } catch (error) {
@@ -134,9 +134,9 @@ export function Contact() {
                     ) : null}
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="contact-email">{t("email")}</Label>
-                    <Input id="contact-email" type="email" {...register("email")} aria-invalid={!!errors.email} />
-                    {errors.email ? <p className="text-xs text-destructive">{t("invalidEmail")}</p> : null}
+                    <Label htmlFor="contact-phone">{t("phone")}</Label>
+                    <Input id="contact-phone" type="tel" dir="ltr" {...register("phone")} aria-invalid={!!errors.phone} />
+                    {errors.phone ? <p className="text-xs text-destructive">{t("invalidPhone")}</p> : null}
                   </div>
                 </div>
                 <div className="space-y-2">
