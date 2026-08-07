@@ -19,7 +19,8 @@ import { logger } from "@/lib/logger";
 
 const contactSchema = z.object({
   name: z.string().min(2),
-  phone: z.string().min(8),
+  phone: z.string().min(8).max(30),
+  email: z.string().email(),
   subject: z.string().min(2),
   message: z.string().min(10),
 });
@@ -76,7 +77,7 @@ export function Contact() {
                     <MapPin className="h-5 w-5" />
                   </span>
                   <div>
-                    <p className="font-medium">{t("name")}</p>
+                    <p className="font-medium">{t("location")}</p>
                     <p className="text-sm text-muted-foreground">
                       {siteConfig.address[locale as keyof typeof siteConfig.address]}
                     </p>
@@ -134,15 +135,22 @@ export function Contact() {
                     ) : null}
                   </div>
                   <div className="space-y-2">
+                    <Label htmlFor="contact-email">{t("email")}</Label>
+                    <Input id="contact-email" type="email" {...register("email")} aria-invalid={!!errors.email} />
+                    {errors.email ? <p className="text-xs text-destructive">{t("invalidEmail")}</p> : null}
+                  </div>
+                </div>
+                <div className="grid gap-5 sm:grid-cols-2">
+                  <div className="space-y-2">
                     <Label htmlFor="contact-phone">{t("phone")}</Label>
                     <Input id="contact-phone" type="tel" dir="ltr" {...register("phone")} aria-invalid={!!errors.phone} />
                     {errors.phone ? <p className="text-xs text-destructive">{t("invalidPhone")}</p> : null}
                   </div>
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="contact-subject">{t("subject")}</Label>
-                  <Input id="contact-subject" {...register("subject")} aria-invalid={!!errors.subject} />
-                  {errors.subject ? <p className="text-xs text-destructive">{t("subject")} required</p> : null}
+                  <div className="space-y-2">
+                    <Label htmlFor="contact-subject">{t("subject")}</Label>
+                    <Input id="contact-subject" {...register("subject")} aria-invalid={!!errors.subject} />
+                    {errors.subject ? <p className="text-xs text-destructive">{t("subject")} required</p> : null}
+                  </div>
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="contact-message">{t("message")}</Label>
