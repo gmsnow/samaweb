@@ -291,7 +291,6 @@ export function BookingForm() {
               className="space-y-5"
             >
               <div>
-                <Label className="mb-2 block">{t("selectService")}</Label>
                 <div className="grid gap-2 sm:grid-cols-2">
                   {serviceOptions.map((s) => {
                     const selected = serviceSlug === s.value;
