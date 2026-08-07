@@ -79,6 +79,7 @@ export function BookingForm() {
     handleSubmit,
     getValues,
     setValue,
+    reset,
     control,
     formState: { errors },
   } = useForm<FormValues>({
@@ -155,6 +156,7 @@ export function BookingForm() {
             setDone(false);
             setStep(0);
             setSelectedTime("");
+            reset();
           }}
           className="mt-6 rounded-xl bg-primary px-6 py-2.5 text-sm font-semibold text-white shadow-lg shadow-primary/30 transition-transform hover:scale-105"
         >
@@ -326,7 +328,10 @@ export function BookingForm() {
                       <button
                         key={slot}
                         type="button"
-                        onClick={() => setSelectedTime(slot)}
+                        onClick={() => {
+                          setSelectedTime(slot);
+                          setValue("time", slot, { shouldValidate: true });
+                        }}
                         className={`rounded-xl border py-2 text-sm font-medium transition-all ${
                           selectedTime === slot
                             ? "border-primary bg-primary text-white"
