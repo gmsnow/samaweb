@@ -225,27 +225,6 @@
         "sacrum": "Sacrum"
       }
     },
-    "ankleFoot": {
-      "eyebrow": "Interactive 3D Model",
-      "title": "Ankle & Foot",
-      "highlight": "Bones, Nerves, Arteries & Ligaments",
-      "description": "An interactive 3D model of the ankle and foot, rendered locally for fast loading. Use the sidebar or click any structure in the 3D view to explore every bone, nerve, artery and ligament.",
-      "searchPlaceholder": "Search bones, nerves, arteries…",
-      "structures": "Structures",
-      "noResults": "No structures found",
-      "reset": "Reset view",
-      "fullscreen": "Fullscreen",
-      "exitFullscreen": "Exit fullscreen",
-      "togglePanel": "Toggle structures panel",
-      "hint": "Select a structure from the sidebar to learn more",
-      "attribution": "Model: Ankle & Foot — Open Anatomy Project (LUMC), CC BY-SA",
-      "categories": {
-        "bones": "Bones",
-        "nerves": "Nerves",
-        "arteries": "Arteries",
-        "ligaments": "Ligaments"
-      }
-    },
     "fullBody": {
       "eyebrow": "Interactive 3D Model",
       "title": "Full Body",
