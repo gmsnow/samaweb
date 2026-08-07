@@ -21,7 +21,6 @@ import { logger } from "@/lib/logger";
 const contactSchema = z.object({
   name: z.string().min(2, { message: "nameMin" }),
   phone: z.string().min(8, { message: "phoneMin" }).max(30, { message: "phoneMax" }),
-  email: z.string().email({ message: "invalidEmail" }),
   subject: z.string().min(2, { message: "subjectMin" }),
   message: z.string().min(10, { message: "messageMin" }),
 });
@@ -139,22 +138,15 @@ export function Contact() {
                     ) : null}
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="contact-email">{t("email")}</Label>
-                    <Input id="contact-email" type="email" {...register("email")} aria-invalid={!!errors.email} />
-                    {errors.email ? <p className="text-xs text-destructive">{errorText(errors.email)}</p> : null}
-                  </div>
-                </div>
-                <div className="grid gap-5 sm:grid-cols-2">
-                  <div className="space-y-2">
                     <Label htmlFor="contact-phone">{t("phone")}</Label>
                     <Input id="contact-phone" type="tel" dir="ltr" {...register("phone")} aria-invalid={!!errors.phone} />
                     {errors.phone ? <p className="text-xs text-destructive">{errorText(errors.phone)}</p> : null}
                   </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="contact-subject">{t("subject")}</Label>
-                    <Input id="contact-subject" {...register("subject")} aria-invalid={!!errors.subject} />
-                    {errors.subject ? <p className="text-xs text-destructive">{errorText(errors.subject)}</p> : null}
-                  </div>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="contact-subject">{t("subject")}</Label>
+                  <Input id="contact-subject" {...register("subject")} aria-invalid={!!errors.subject} />
+                  {errors.subject ? <p className="text-xs text-destructive">{errorText(errors.subject)}</p> : null}
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="contact-message">{t("message")}</Label>
