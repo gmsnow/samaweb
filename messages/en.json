@@ -238,7 +238,6 @@
       "exitFullscreen": "Exit fullscreen",
       "togglePanel": "Toggle structures panel",
       "hint": "Click any bone, muscle or bursa in the 3D view to learn more",
-      "attribution": "Model: Z-Anatomy / BodyParts3D (DBERI, CC BY-SA)",
       "noDescription": "No description available for this structure.",
       "allCategories": "All",
       "categories": {

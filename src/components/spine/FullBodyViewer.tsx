@@ -344,8 +344,7 @@ export function FullBodyViewer() {
       </div>
 
       <div className="pointer-events-none absolute inset-x-0 bottom-0 z-[5] bg-gradient-to-t from-slate-950/90 via-slate-950/40 to-transparent p-4 pt-16">
-        <p className="text-center text-xs text-white/40">{t("attribution")}</p>
-        <p className="mt-1 text-center text-xs text-white/60">{t("hint")}</p>
+        <p className="text-center text-xs text-white/60">{t("hint")}</p>
       </div>
     </div>
   );
