@@ -5,6 +5,7 @@ export interface LiveService {
   id: string;
   name: string;
   price: number;
+  iconUrl: string | null;
 }
 
 const CACHE_TTL = 5 * 60 * 1000;
@@ -73,7 +74,7 @@ export async function fetchLiveServices(): Promise<LiveService[]> {
   try {
     const { data, error } = await supabaseBrowser
       .from("services")
-      .select("id, name, price")
+      .select("id, name, price, icon_url")
       .eq("isActive", true)
       .is("deleted_at", null)
       .order("price", { ascending: true });
@@ -84,6 +85,7 @@ export async function fetchLiveServices(): Promise<LiveService[]> {
       id: String(row.id),
       name: String(row.name ?? ""),
       price: Number(row.price ?? 0),
+      iconUrl: row.icon_url ? String(row.icon_url) : null,
     }));
 
     cache = { data: list, at: Date.now() };

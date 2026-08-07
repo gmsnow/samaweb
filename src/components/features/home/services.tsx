@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import Image from "next/image";
 import { motion } from "framer-motion";
 import { useTranslations, useLocale } from "next-intl";
 import { ArrowUpRight, Activity } from "lucide-react";
@@ -54,9 +55,21 @@ export function Services({ initialServices }: { initialServices?: LiveService[] 
                   <Link href="/appointment">
                     <Card className="group relative h-full overflow-hidden p-6 hover:-translate-y-1.5 hover:border-primary/40 hover:shadow-lift">
                       <div className="absolute -end-10 -top-10 h-32 w-32 rounded-full bg-gradient-to-br from-blue-500 to-cyan-400 opacity-0 blur-2xl transition-opacity duration-500 group-hover:opacity-20" />
-                      <div className="mb-5 flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-blue-500 to-cyan-400 text-white shadow-soft transition-transform duration-300 group-hover:scale-110 group-hover:rotate-3">
-                        <Activity className="h-6 w-6" />
-                      </div>
+                      {service.iconUrl ? (
+                        <div className="mb-5 h-12 w-12 overflow-hidden rounded-2xl shadow-soft transition-transform duration-300 group-hover:scale-110 group-hover:rotate-3">
+                          <Image
+                            src={service.iconUrl}
+                            alt={service.name}
+                            width={48}
+                            height={48}
+                            className="h-full w-full object-cover"
+                          />
+                        </div>
+                      ) : (
+                        <div className="mb-5 flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-blue-500 to-cyan-400 text-white shadow-soft transition-transform duration-300 group-hover:scale-110 group-hover:rotate-3">
+                          <Activity className="h-6 w-6" />
+                        </div>
+                      )}
                       <h3 className="text-base font-semibold">{service.name}</h3>
                       <p className="mt-2 text-sm font-medium text-primary">
                         {formatPrice(service.price, locale)}{" "}
