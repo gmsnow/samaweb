@@ -3,6 +3,7 @@
 import * as React from "react";
 import { useTranslations, useLocale } from "next-intl";
 import { useForm } from "react-hook-form";
+import type { FieldError } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
@@ -18,11 +19,11 @@ import { siteConfig } from "@/config/site";
 import { logger } from "@/lib/logger";
 
 const contactSchema = z.object({
-  name: z.string().min(2),
-  phone: z.string().min(8).max(30),
-  email: z.string().email(),
-  subject: z.string().min(2),
-  message: z.string().min(10),
+  name: z.string().min(2, { message: "nameMin" }),
+  phone: z.string().min(8, { message: "phoneMin" }).max(30, { message: "phoneMax" }),
+  email: z.string().email({ message: "invalidEmail" }),
+  subject: z.string().min(2, { message: "subjectMin" }),
+  message: z.string().min(10, { message: "messageMin" }),
 });
 
 type ContactValues = z.infer<typeof contactSchema>;
@@ -39,6 +40,9 @@ export function Contact() {
   } = useForm<ContactValues>({
     resolver: zodResolver(contactSchema),
   });
+
+  const errorText = (error?: FieldError) =>
+    error?.message ? t(error.message as never) : null;
 
   const onSubmit = async (values: ContactValues) => {
     try {
@@ -131,31 +135,31 @@ export function Contact() {
                     <Label htmlFor="contact-name">{t("name")}</Label>
                     <Input id="contact-name" {...register("name")} aria-invalid={!!errors.name} />
                     {errors.name ? (
-                      <p className="text-xs text-destructive">{t("name")} required</p>
+                      <p className="text-xs text-destructive">{errorText(errors.name)}</p>
                     ) : null}
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="contact-email">{t("email")}</Label>
                     <Input id="contact-email" type="email" {...register("email")} aria-invalid={!!errors.email} />
-                    {errors.email ? <p className="text-xs text-destructive">{t("invalidEmail")}</p> : null}
+                    {errors.email ? <p className="text-xs text-destructive">{errorText(errors.email)}</p> : null}
                   </div>
                 </div>
                 <div className="grid gap-5 sm:grid-cols-2">
                   <div className="space-y-2">
                     <Label htmlFor="contact-phone">{t("phone")}</Label>
                     <Input id="contact-phone" type="tel" dir="ltr" {...register("phone")} aria-invalid={!!errors.phone} />
-                    {errors.phone ? <p className="text-xs text-destructive">{t("invalidPhone")}</p> : null}
+                    {errors.phone ? <p className="text-xs text-destructive">{errorText(errors.phone)}</p> : null}
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="contact-subject">{t("subject")}</Label>
                     <Input id="contact-subject" {...register("subject")} aria-invalid={!!errors.subject} />
-                    {errors.subject ? <p className="text-xs text-destructive">{t("subject")} required</p> : null}
+                    {errors.subject ? <p className="text-xs text-destructive">{errorText(errors.subject)}</p> : null}
                   </div>
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="contact-message">{t("message")}</Label>
                   <Textarea id="contact-message" rows={5} {...register("message")} aria-invalid={!!errors.message} />
-                  {errors.message ? <p className="text-xs text-destructive">{t("message")} required</p> : null}
+                  {errors.message ? <p className="text-xs text-destructive">{errorText(errors.message)}</p> : null}
                 </div>
                 <Button type="submit" size="lg" className="w-full gap-2 sm:w-auto" disabled={isSubmitting}>
                   <Send className="h-4 w-4" />
