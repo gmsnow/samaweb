@@ -60,6 +60,27 @@ function initials(name: string): string {
     .join("");
 }
 
+function shortDescription(raw: string): string {
+  let text = raw
+    .split("\n")
+    .map((line) => line.replace(/https?:\/\/\S+/g, "").trim())
+    .filter(Boolean)
+    .join(" ");
+  const titleMatch = text.match(/^([A-Z][A-Z0-9'&\-.,() ]{2,60})\s+/);
+  if (titleMatch && text.length > titleMatch[1].length + 20) {
+    text = text.slice(titleMatch[1].length).trim();
+  }
+  text = text.replace(/\s+/g, " ").trim();
+  const sentence = text.match(/^.*?[.!?](?:\s|$)/);
+  if (sentence) text = sentence[0].trim();
+  if (text.length > 240) {
+    const cut = text.slice(0, 240);
+    const idx = Math.max(cut.lastIndexOf(" "), cut.lastIndexOf("."));
+    text = cut.slice(0, idx > 80 ? idx : 240).trim();
+  }
+  return text;
+}
+
 export function FullBodyViewer() {
   const t = useTranslations("anatomy.fullBody");
   const containerRef = useRef<HTMLDivElement>(null);
@@ -201,7 +222,7 @@ export function FullBodyViewer() {
       category: t(`categories.${s.category}`),
       categoryColor: BODY_CATEGORY_COLORS[s.category],
       fullName: s.name,
-      description: s.description || t("noDescription"),
+      description: shortDescription(s.description) || t("noDescription"),
     };
   }, [selected, filteredStructures, t]);
 
