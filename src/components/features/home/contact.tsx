@@ -157,6 +157,19 @@ export function Contact() {
             </Card>
           </Reveal>
         </div>
+
+        <Reveal className="mt-10">
+          <Card className="overflow-hidden p-0">
+            <iframe
+              title={t("mapTitle")}
+              src="https://www.google.com/maps?q=C572%2BJ79%20Sanaa%20Yemen&output=embed"
+              className="h-[400px] w-full border-0"
+              loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
+              allowFullScreen
+            />
+          </Card>
+        </Reveal>
       </div>
     </section>
   );
