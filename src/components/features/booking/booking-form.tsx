@@ -35,8 +35,7 @@ const formSchema = z.object({
 type FormValues = z.infer<typeof formSchema>;
 
 const TIME_SLOTS = [
-  "09:00", "09:45", "10:30", "11:15", "12:00",
-  "14:00", "14:45", "15:30", "16:15", "17:00", "17:45",
+  "09:00", "10:00", "11:00", "12:00", "13:00",
 ];
 
 function getNextDays(count: number) {
@@ -46,7 +45,7 @@ function getNextDays(count: number) {
     const d = new Date(now);
     d.setDate(now.getDate() + i);
     const dow = d.getDay();
-    if (dow === 0) continue;
+    if (dow === 5) continue;
     days.push({
       iso: d.toISOString().slice(0, 10),
       weekday: d.toLocaleDateString("en-US", { weekday: "short" }),
