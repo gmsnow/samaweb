@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { useLocale, useTranslations } from "next-intl";
+import { useTranslations } from "next-intl";
 import { motion, AnimatePresence } from "framer-motion";
 import { useForm, useWatch } from "react-hook-form";
 import { z } from "zod";
@@ -12,8 +12,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { services } from "@/data/content";
-import { fetchLiveServices, fetchLiveEmployees, formatPrice, type LiveService, type LiveEmployee } from "@/lib/data/live";
+import { fetchLiveEmployees, type LiveEmployee } from "@/lib/data/live";
 import { logger } from "@/lib/logger";
 
 const STEPS = [
@@ -28,7 +27,6 @@ const formSchema = z.object({
   lastName: z.string().min(2, "required"),
   phone: z.string().min(8, "invalidPhone"),
   message: z.string().optional(),
-  service: z.string().min(1, "required"),
   doctor: z.string().min(1, "required"),
   date: z.string().min(1, "required"),
   time: z.string().min(1, "required"),
@@ -60,20 +58,15 @@ function getNextDays(count: number) {
 }
 
 export function BookingForm() {
-  const locale = useLocale();
   const t = useTranslations("appointment");
   const [step, setStep] = React.useState(0);
   const [done, setDone] = React.useState(false);
   const [submitting, setSubmitting] = React.useState(false);
   const [selectedTime, setSelectedTime] = React.useState("");
-  const [liveServices, setLiveServices] = React.useState<LiveService[] | null>(null);
   const [liveEmployees, setLiveEmployees] = React.useState<LiveEmployee[] | null>(null);
 
   React.useEffect(() => {
     let active = true;
-    fetchLiveServices().then((list) => {
-      if (active && list.length > 0) setLiveServices(list);
-    });
     fetchLiveEmployees().then((list) => {
       if (active && list.length > 0) setLiveEmployees(list);
     });
@@ -92,55 +85,31 @@ export function BookingForm() {
   } = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      service: "",
       doctor: "",
       date: "",
       time: "",
     },
   });
 
-  const serviceSlug = useWatch({ control, name: "service" });
   const doctorId = useWatch({ control, name: "doctor" });
   const date = useWatch({ control, name: "date" });
   const firstName = useWatch({ control, name: "firstName" });
   const lastName = useWatch({ control, name: "lastName" });
-  const selectedService = liveServices
-    ? liveServices.find((s) => s.id === serviceSlug)
-    : services.find((s) => s.slug === serviceSlug);
   const doctorOptions = liveEmployees ?? [];
   const selectedDoctor = doctorOptions.find((d) => d.id === doctorId);
-  const serviceOptions = React.useMemo(
-    () =>
-      liveServices
-        ? liveServices.map((s) => ({
-            value: s.id,
-            label: s.name,
-            sub: `${formatPrice(s.price, locale)} ${locale === "ar" ? "ريال" : "YER"}`,
-          }))
-        : services.map((s) => ({
-            value: s.slug,
-            label: s.name.en,
-            sub: s.desc.en,
-          })),
-    [liveServices, locale]
-  );
-  const serviceDisplayName =
-    selectedService == null
-      ? "—"
-      : typeof selectedService.name === "string"
-        ? selectedService.name
-        : selectedService.name.en;
   const days = React.useMemo(() => getNextDays(16), []);
 
   const goNext = () => {
-    const labels = ["firstName", "service", "date"];
-    const values = [getValues("firstName"), serviceSlug, date];
+    const labels = ["firstName", "doctor", "date"];
+    const values = [getValues("firstName"), doctorId, date];
     if (step === 2 && !selectedTime) {
       toast.error(t("selectTime"));
       return;
     }
     if (!values[step] && step < 3) {
-      toast.error(t(labels[step] === "firstName" ? "required" : "selectService"));
+      toast.error(
+        t(labels[step] === "firstName" ? "required" : labels[step] === "doctor" ? "selectDoctor" : "selectDate")
+      );
       return;
     }
     setStep((s) => Math.min(s + 1, 3));
@@ -155,7 +124,6 @@ export function BookingForm() {
         body: JSON.stringify({
           ...data,
           time: selectedTime,
-          serviceName: serviceDisplayName === "—" ? data.service : serviceDisplayName,
           doctorName: selectedDoctor?.name ?? data.doctor,
         }),
       });
@@ -291,30 +259,6 @@ export function BookingForm() {
               className="space-y-5"
             >
               <div>
-                <div className="grid gap-2 sm:grid-cols-2">
-                  {serviceOptions.map((s) => {
-                    const selected = serviceSlug === s.value;
-                    return (
-                      <button
-                        key={s.value}
-                        type="button"
-                        onClick={() => setValue("service", s.value)}
-                        className={`rounded-2xl border p-3 text-start transition-all ${
-                          selected
-                            ? "border-primary bg-primary/5 ring-2 ring-primary/30"
-                            : "border-border/50 hover:border-primary/40"
-                        }`}
-                      >
-                        <p className="text-sm font-semibold">{s.label}</p>
-                        <p className="mt-0.5 line-clamp-2 text-xs text-muted-foreground">
-                          {s.sub}
-                        </p>
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-              <div>
                 <Label className="mb-2 block">{t("selectDoctor")}</Label>
                 <div className="grid gap-2 sm:grid-cols-2">
                   {doctorOptions.map((d) => (
@@ -412,7 +356,6 @@ export function BookingForm() {
               <h3 className="font-semibold">{t("details")}</h3>
               <dl className="space-y-3 rounded-2xl bg-muted/40 p-5 text-sm">
                 <Row label={t("personal")} value={`${firstName ?? ""} ${lastName ?? ""}`} />
-                <Row label={t("service")} value={serviceDisplayName} />
                 <Row label={t("doctor")} value={selectedDoctor?.name ?? "—"} />
                 <Row label={t("date")} value={date} />
                 <Row label={t("time")} value={selectedTime} />

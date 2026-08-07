@@ -277,7 +277,7 @@
     "highlight": "Appointment",
     "description": "Fill in your details and our team will confirm within minutes.",
     "step1": "Your Details",
-    "step2": "Service & Doctor",
+    "step2": "Select Doctor",
     "step3": "Date & Time",
     "step4": "Confirm",
     "firstName": "First Name",
